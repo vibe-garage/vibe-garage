@@ -8,7 +8,7 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/api/*", "/img/*"],
+    "run_worker_first": ["/", "/api/*", "/img/*", "/assets/giscus-theme*.css"],
     "not_found_handling": "404-page",
     "html_handling": "none"
   },

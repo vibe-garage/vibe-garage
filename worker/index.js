@@ -88,6 +88,8 @@ async function handleApi(request, env, ctx) {
   }
 }
 
+const GISCUS_THEME_CSS = /^\/assets\/giscus-theme[^/]*\.css$/;
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -108,6 +110,15 @@ export default {
 
     if (url.pathname === "/") {
       return env.ASSETS.fetch(new Request(new URL("/index.html", url), request));
+    }
+
+    if (GISCUS_THEME_CSS.test(url.pathname)) {
+      // giscus.app loads this stylesheet cross-origin into its iframe, so it needs CORS.
+      const res = await env.ASSETS.fetch(request);
+      const out = new Response(res.body, res);
+      out.headers.set("Access-Control-Allow-Origin", "https://giscus.app");
+      out.headers.append("Vary", "Origin");
+      return out;
     }
 
     return env.ASSETS.fetch(request);

@@ -74,7 +74,6 @@
       pitch: post.pitch || "",
       tools: post.tools || [],
       tags: post.tags || [],
-      fb: post.feedback || "vibes",
       likes: 0,
       comments: 0,
       reactions: null,
@@ -261,7 +260,7 @@
   const FB = { vibes: ["Just vibes", "💜", "No critique, hype only", "fb"], gentle: ["Gentle tips", "🌱", "Kind suggestions welcome", "fb gentle"], tear: ["Tear it apart", "🔥", "Brutal honesty, please", "fb tear"] };
   const toolColor = (n) => ((D.tools || []).find((t) => t.name === n) || {}).color || "#93a1b3";
   const toolTag = (n) => `<span class="tag tool"><span class="dot" style="color:${toolColor(n)}"></span>${esc(n)}</span>`;
-  const fbTag = (f) => { const x = FB[f] || FB.gentle; return `<span class="tag ${x[3]}">${x[1]} ${x[0]}</span>`; };
+  const fbTag = (f) => { const x = FB[f]; if (!x) return ""; return `<span class="tag ${x[3]}">${x[1]} ${x[0]}</span>`; };
   function art(p, ribbon = "") {
     let inner = "";
     if (p && p.image) inner = `<img src="${esc(p.image)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`;
@@ -976,7 +975,7 @@
         try { ownerMe = await VGN.me(); } catch (e) { ownerMe = null; }
       }
       const isOwner = Boolean(native && ownerMe && ownerMe.id === p.byId);
-      const feedbackBlock = native ? "" : `<div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>`;
+      const feedbackBlock = native || !FB[p.fb] ? "" : `<div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>`;
       const hero = native && p.image
         ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`
         : art(p);
@@ -1031,7 +1030,7 @@ ${native ? "" : (p.number ? giscus(p.number) : "")}
         writeQuery((p) => { setOrDel(p, "c", cur, "all"); setOrDel(p, "sort", sort, "newest"); });
         const ch = cur === "all" || cur === "announcements" ? "newbie-corner" : cur;
         api.categorySlug(ch).then((slug) => {
-          const threadUrl = api.newDiscussionUrl(slug, "", "Feedback level: Gentle tips 🌱\n\n<!-- What's up? Share what you built, what you're stuck on, or what you learned. Change the feedback level to \"Just vibes\" or \"Tear it apart\" if you like. -->\n");
+          const threadUrl = api.newDiscussionUrl(slug, "", "<!-- What's up? Share what you built, what you're stuck on, or what you learned. -->\n");
           $$("[data-newthread]").forEach((a) => { a.href = threadUrl; a.removeAttribute("data-toast"); });
         }).catch(() => {});
         const l = sortThreads(ts.filter((t) => cur === "all" || t.channel === cur), sort);
@@ -1087,7 +1086,7 @@ ${giscus(t.number)}`;
       }
       const posts = Array.isArray(t.posts) ? t.posts : [];
       const post = (p, i) => `<article class="post reveal ${p.pinned ? "pinned" : ""} ${i === 0 ? "op" : ""}">${p.pinned ? `<div class="pin">${ic("pin")} pinned helpful answer</div>` : ""}<div class="who">${who(p.by)}${i === 0 ? `<span class="badge">author</span>` : ""}<small class="muted">${esc(p.ago || "")}</small></div>${sanitize(p.html || "")}</article>`;
-      root.innerHTML = `<div class="page-head" style="padding-top:30px"><a class="kicker" href="${url("forum.html?c=" + encodeURIComponent(c.id || ""))}">${ic("arrow-left")} ${esc(c.name)}</a><h1 style="font-size:clamp(2rem,5vw,3.6rem);margin-top:.35em">${esc(t.title)}</h1><div class="tags">${fbTag(t.fb)}</div></div>${posts.length ? posts.map(post).join("") : empty("No replies yet", "Open the thread on GitHub to reply.", t.url ? `<a class="btn sm" href="${esc(t.url)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a>` : "")}<div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, t.title)}</div>`;
+      root.innerHTML = `<div class="page-head" style="padding-top:30px"><a class="kicker" href="${url("forum.html?c=" + encodeURIComponent(c.id || ""))}">${ic("arrow-left")} ${esc(c.name)}</a><h1 style="font-size:clamp(2rem,5vw,3.6rem);margin-top:.35em">${esc(t.title)}</h1><div class="tags">${t.channel === "announcements" ? "" : fbTag(t.fb)}</div></div>${posts.length ? posts.map(post).join("") : empty("No replies yet", "Open the thread on GitHub to reply.", t.url ? `<a class="btn sm" href="${esc(t.url)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a>` : "")}<div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, t.title)}</div>`;
       bindShare(root);
       reveal();
     },
@@ -1585,8 +1584,6 @@ ${giscus(t.number)}`;
       $("#pprompts").value = (editPost.prompts || []).join("\n");
       $$("input[name=tools]").forEach((input) => { input.checked = (editPost.tools || []).includes(input.value); });
       $$("input[name=tags]").forEach((input) => { input.checked = (editPost.tags || []).includes(input.value); });
-      const feedback = $(`input[name=fb][value="${editPost.feedback || "vibes"}"]`);
-      if (feedback) feedback.checked = true;
     }
     const drop = $("#drop");
     const file = $("#pfile");
@@ -1613,7 +1610,7 @@ ${giscus(t.number)}`;
     };
     drop.addEventListener("drop", (e) => preview(e.dataTransfer.files[0]));
     file.addEventListener("change", () => preview(file.files[0]));
-    const val = () => ({ name: $("#pname").value.trim(), pitch: pitch.value.trim(), link: $("#plink").value.trim(), repo: $("#prepo").value.trim(), code: $("#pcode").value, prompts: $("#pprompts").value, tools: $$("input[name=tools]:checked").map((i) => i.value), tags: $$("input[name=tags]:checked").map((i) => i.value), fb: ($("input[name=fb]:checked") || {}).value || "vibes" });
+    const val = () => ({ name: $("#pname").value.trim(), pitch: pitch.value.trim(), link: $("#plink").value.trim(), repo: $("#prepo").value.trim(), code: $("#pcode").value, prompts: $("#pprompts").value, tools: $$("input[name=tools]:checked").map((i) => i.value), tags: $$("input[name=tags]:checked").map((i) => i.value) });
     function show() {
       $$(".wstep").forEach((s) => s.classList.toggle("on", +s.dataset.step === step));
       $$(".step-pill").forEach((p) => { const n = +p.dataset.pill; p.classList.toggle("on", n === step); p.classList.toggle("done", n < step); });
@@ -1711,7 +1708,6 @@ ${giscus(t.number)}`;
           prompts,
           tools: v.tools,
           tags,
-          feedback: v.fb,
           image_key,
         };
         const post = editPost ? await VGN.updatePost(editPost.id, payload) : await VGN.createPost(payload);
@@ -1735,7 +1731,6 @@ ${giscus(t.number)}`;
         await nativePublish(v);
         return;
       }
-      const fbName = FB[v.fb][0];
       let code = v.code.trim();
       const limit = 3500;
       let cut = false;
@@ -1744,7 +1739,7 @@ ${giscus(t.number)}`;
       if (challengeNum && !tags.includes("challenge")) tags.push("challenge");
       const lines = [C.projectMarker || "<!-- vibe-garage:project -->", ""];
       if (challengeNum) lines.push("Challenge: #" + challengeNum, "");
-      lines.push("### Pitch", v.pitch || "_No response_", "", "### Live link", v.link || "_No response_", "", "### Repo", v.repo || "_No response_", "", "### Tools", v.tools.join(", ") || "_No response_", "", "### Tags", tags.join(", ") || "_No response_", "", "### Feedback wanted", `${FB[v.fb][1]} ${fbName}`, "", "### Code", code ? "```\n" + code + "\n```" + (cut ? "\n_(trimmed, paste the rest below)_" : "") : "_No response_", "", "### Prompts", v.prompts.trim() ? v.prompts.trim().split(/\n+/).map((x) => "- " + x).join("\n") : "_No response_", "", "---", "_Posted from the Vibe Garage submit form. Add a screenshot by dragging it into this box!_");
+      lines.push("### Pitch", v.pitch || "_No response_", "", "### Live link", v.link || "_No response_", "", "### Repo", v.repo || "_No response_", "", "### Tools", v.tools.join(", ") || "_No response_", "", "### Tags", tags.join(", ") || "_No response_", "", "### Code", code ? "```\n" + code + "\n```" + (cut ? "\n_(trimmed, paste the rest below)_" : "") : "_No response_", "", "### Prompts", v.prompts.trim() ? v.prompts.trim().split(/\n+/).map((x) => "- " + x).join("\n") : "_No response_", "", "---", "_Posted from the Vibe Garage submit form. Add a screenshot by dragging it into this box!_");
       const body = lines.join("\n");
       const discuss = api.newDiscussionUrl(await api.categorySlug("projects"), "[Project] " + v.name, body);
       $("#okAlert div").innerHTML = `<b>Looks clean! One last step on GitHub.</b> No secrets spotted. We opened a draft discussion in a new tab. Log in there, add your screenshot, and hit <b>Start discussion</b>. Your project shows up in the gallery shortly after.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(discuss)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the GitHub post</a></p>`;
