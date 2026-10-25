@@ -2,8 +2,10 @@
 (function () {
   const C = window.VG_CONFIG || {};
   const TEST_TURNSTILE_KEY = "1x00000000000000000000AA";
+  const TURNSTILE_LOAD_ERROR = "Couldn't load the verification check. Refresh and try again.";
   const MAX_IMAGE_BYTES = 1048576;
   let mePromise = null;
+  let configPromise = null;
   let turnstileScriptPromise = null;
 
   async function request(path, options = {}) {
@@ -49,6 +51,20 @@
     }
 
     return data || {};
+  }
+
+  function isLocalHost() {
+    const host = location.hostname;
+    return host === "localhost" || host === "127.0.0.1";
+  }
+
+  function loadConfig() {
+    if (!configPromise) {
+      configPromise = request("/api/config")
+        .then((data) => (data && data.turnstileSiteKey) || C.turnstileSiteKey || "")
+        .catch(() => C.turnstileSiteKey || "");
+    }
+    return configPromise;
   }
 
   function me() {
@@ -268,45 +284,52 @@
       setError("");
       if (!creating) {
         turnstileToken = null;
+        submitButton.disabled = false;
       } else {
         prepareTurnstile();
       }
     }
 
     async function prepareTurnstile() {
-      const sitekey = C.turnstileSiteKey;
-      if (!sitekey) {
+      const sitekey = await loadConfig();
+      const localTest = isLocalHost() && sitekey === TEST_TURNSTILE_KEY;
+      if (localTest) {
         turnstileToken = "dev";
+        turnstileRendered = false;
+        turnstileBox.innerHTML = "";
+        submitButton.disabled = false;
         return;
       }
-      if (sitekey === TEST_TURNSTILE_KEY) {
-        turnstileToken = "dev";
-        if (!turnstileBox.dataset.note) {
-          turnstileBox.dataset.note = "1";
-          turnstileBox.innerHTML = '<p class="muted" style="font-size:.82rem;margin:0">Test mode: verification is skipped.</p>';
-        }
+      if (!sitekey) {
+        turnstileToken = null;
+        turnstileBox.innerHTML = `<p class="muted" style="font-size:.82rem;margin:0">${TURNSTILE_LOAD_ERROR}</p>`;
+        submitButton.disabled = true;
         return;
       }
       if (turnstileRendered) return;
 
       const loaded = await loadTurnstile();
       if (!loaded || !window.turnstile || typeof window.turnstile.render !== "function") {
-        turnstileToken = "dev";
-        turnstileBox.innerHTML = '<p class="muted" style="font-size:.82rem;margin:0">Verification is unavailable, continuing in test mode.</p>';
+        turnstileToken = null;
+        turnstileBox.innerHTML = `<p class="muted" style="font-size:.82rem;margin:0">${TURNSTILE_LOAD_ERROR}</p>`;
+        submitButton.disabled = true;
         return;
       }
 
       turnstileBox.innerHTML = "";
+      submitButton.disabled = false;
       try {
         window.turnstile.render(turnstileBox, {
           sitekey,
           callback: (token) => { turnstileToken = token; },
-          "error-callback": () => { turnstileToken = "dev"; },
+          "error-callback": () => { turnstileToken = null; },
           "expired-callback": () => { turnstileToken = null; },
         });
         turnstileRendered = true;
       } catch {
-        turnstileToken = "dev";
+        turnstileToken = null;
+        turnstileBox.innerHTML = `<p class="muted" style="font-size:.82rem;margin:0">${TURNSTILE_LOAD_ERROR}</p>`;
+        submitButton.disabled = true;
       }
     }
 
@@ -338,9 +361,7 @@
           return;
         }
         if (!turnstileToken) {
-          setError(C.turnstileSiteKey === TEST_TURNSTILE_KEY
-            ? "Verification is not ready yet. Try again."
-            : "Complete the verification, then try again.");
+          setError("Complete the verification, then try again.");
           return;
         }
       }
@@ -352,7 +373,7 @@
             email,
             password,
             display_name: displayName,
-            turnstile: turnstileToken || "dev",
+            turnstile: turnstileToken || "",
           });
           onDone(user);
         } else {

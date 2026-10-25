@@ -8,6 +8,8 @@ const SESSION_COOKIE = `${COOKIE_NAME}=`;
 const TEST_TURNSTILE_SECRET = "1x0000000000000000000000000000000AA";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_RE = /[\u0000-\u001f\u007f]/;
+const DUMMY_SALT = "AAAAAAAAAAAAAAAAAAAAAA==";
+const DUMMY_HASH = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
 function nowSec() {
   return Math.floor(Date.now() / 1000);
@@ -220,6 +222,11 @@ export async function login(request, env) {
 
   const row = await findUserByEmail(env, email);
   if (!row) {
+    await verifyPassword(password, {
+      hash: DUMMY_HASH,
+      salt: DUMMY_SALT,
+      iter: env.PBKDF2_ITER,
+    });
     return error(401, "bad_credentials", "Incorrect email or password.");
   }
 
@@ -231,6 +238,11 @@ export async function login(request, env) {
   if (!valid) {
     return error(401, "bad_credentials", "Incorrect email or password.");
   }
+
+  const now = nowSec();
+  await env.DB.prepare("DELETE FROM sessions WHERE user_id = ?1 AND expires_at < ?2")
+    .bind(row.id, now)
+    .run();
 
   const token = await createSession(env, row.id);
   return json({ user: publicUser(row) }, 200, { "Set-Cookie": sessionCookie(token) });

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { env } from "cloudflare:test";
 import { api, createPost, readJson, signupUser, tinyPng } from "./helpers.js";
 
 const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
@@ -106,5 +107,47 @@ describe("images", () => {
 
     expect(response.status).toBe(400);
     expect(data.error.message).toContain("another account");
+  });
+
+  it("lets the owner use the uploaded image_key", async () => {
+    const owner = await signupUser();
+
+    const upload = await api("/api/images", {
+      method: "PUT",
+      cookie: owner.cookie,
+      ip: owner.ip,
+      rawBody: tinyPng(),
+      contentType: "image/png",
+    });
+    expect(upload.status).toBe(201);
+    const { key } = await readJson(upload);
+
+    const row = await env.DB.prepare("SELECT * FROM images WHERE key = ?1")
+      .bind(key)
+      .first();
+    expect(row.user_id).toBe(owner.user.id);
+    expect(row.type).toBe("image/png");
+
+    const { response, data } = await createPost(
+      owner.cookie,
+      {
+        kind: "project",
+        title: "Own Image Project",
+        body_md: "",
+        pitch: "This screenshot is mine.",
+        link: "",
+        repo: "",
+        code: "",
+        prompts: [],
+        tools: [],
+        tags: ["game"],
+        feedback: "vibes",
+        image_key: key,
+      },
+      owner.ip
+    );
+
+    expect(response.status).toBe(201);
+    expect(data.post.image).toBe(`/img/${key}`);
   });
 });

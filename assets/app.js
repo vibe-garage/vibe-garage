@@ -6,6 +6,9 @@
   const I = window.VG_ICONS || {};
   const C = window.VG_CONFIG || {};
   const nativePosts = Boolean(C.nativePosts);
+  const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+  const IMAGE_TYPE_ERROR = "Use a PNG, JPEG or WebP image.";
+  const isAllowedImage = (file) => Boolean(file && IMAGE_TYPES.includes(file.type));
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -274,7 +277,7 @@
     const href = url("project.html?id=" + encodeURIComponent(p.id));
     return `<article class="card reveal ${cls}"><a class="stretch" href="${href}"><span class="sr-only">${esc(p.name)}</span></a>${art(p, ribbon + rank)}
 <div class="body">${opts.cover ? `<div class="cover-tag">${ic("star")} Cover story · this week</div>` : ""}<h3>${esc(p.name)}</h3><p>${esc(p.pitch || "")}</p>
-<div class="tags">${(p.tools || []).map(toolTag).join("")}${opts.noFb ? "" : fbTag(p.fb)}</div>
+<div class="tags">${(p.tools || []).map(toolTag).join("")}${opts.noFb || p.native ? "" : fbTag(p.fb)}</div>
 <div class="meta">${p.native ? whoNative(p.by, p.avatar, p.byId) : who(p.by, p.avatar)}<span>${ic("heart")} ${reacted(p)}</span><span>${ic("message-circle")} ${p.comments || 0}</span></div></div></article>`;
   }
   const skel = (n, cls = "") => Array.from({ length: n }, () => `<div class="card skel ${cls}"><div class="art"></div><div class="body"><div class="ln h"></div><div class="ln"></div><div class="ln w60"></div><div class="ln w40"></div></div></div>`).join("");
@@ -948,6 +951,7 @@
         try { ownerMe = await VGN.me(); } catch (e) { ownerMe = null; }
       }
       const isOwner = Boolean(native && ownerMe && ownerMe.id === p.byId);
+      const feedbackBlock = native ? "" : `<div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>`;
       const hero = native && p.image
         ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`
         : art(p);
@@ -969,7 +973,7 @@
 <div class="panel reveal" style="margin-top:22px"><h3>${ic("code")} The code</h3><p class="muted" style="margin-top:0">${repo ? `${ic("git-branch")} <a class="mono" href="${esc(repo)}" target="_blank" rel="noopener noreferrer">${esc(repo.replace(/^https:\/\/github.com\//, "github.com/"))}</a>` : "No repo linked."}</p>${code ? `<div style="position:relative"><pre class="code">${esc(code)}</pre><button type="button" class="btn ghost sm copy" data-copy>${ic("code")} Copy</button></div>` : `<p class="muted">No code pasted.</p>`}</div>
 <div class="panel reveal"><h3>${ic("wand-sparkles")} Prompts they shared</h3><p class="muted" style="margin-top:0">The secret sauce. Steal freely.</p>${(p.prompts || []).map((x) => `<div class="prompt">${ic("terminal")}${esc(x)}</div>`).join("") || `<p class="muted">No prompts shared.</p>`}</div>
 <div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, p.name)}</div></div>
-<aside><div class="panel glass"><div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>
+<aside><div class="panel glass">${feedbackBlock}
 ${live ? `<p style="margin:18px 0 6px"><a class="btn" style="width:100%" href="${esc(live)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open it live</a></p>` : ""}</div>
 ${native ? "" : reactionBlock(p.reactions, p.discussionUrl)}
 <div class="panel"><h3>${ic("user")} Builder</h3><div style="display:flex;gap:12px;align-items:center">${native ? whoNative(author, p.avatar, p.byId) : who(author, p.avatar)}</div></div>
@@ -1418,8 +1422,16 @@ ${giscus(t.number)}`;
     updateCount();
 
     coverInput?.addEventListener("change", () => {
-      coverFile = (coverInput.files && coverInput.files[0]) || null;
-      if (coverName) coverName.textContent = coverFile ? "✔ " + coverFile.name : "";
+      const picked = (coverInput.files && coverInput.files[0]) || null;
+      if (picked && !isAllowedImage(picked)) {
+        coverFile = null;
+        coverInput.value = "";
+        if (coverName) { coverName.textContent = IMAGE_TYPE_ERROR; coverName.classList.add("err"); }
+        toast(IMAGE_TYPE_ERROR, "warn");
+        return;
+      }
+      coverFile = picked;
+      if (coverName) { coverName.classList.remove("err"); coverName.textContent = coverFile ? "✔ " + coverFile.name : ""; }
     });
 
     const showError = (message) => {
@@ -1482,8 +1494,13 @@ ${giscus(t.number)}`;
         }
         $("#guide-auth")?.replaceChildren();
 
+        if (coverFile && !isAllowedImage(coverFile)) {
+          showError(IMAGE_TYPE_ERROR);
+          return;
+        }
+
         let image_key;
-        if (coverFile && coverFile.type.startsWith("image/")) {
+        if (coverFile && isAllowedImage(coverFile)) {
           const blob = await VGN.resizeImage(coverFile);
           const uploaded = await VGN.uploadImage(blob);
           image_key = uploaded.key;
@@ -1553,7 +1570,22 @@ ${giscus(t.number)}`;
     ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
     ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
     let selectedFile = null;
-    const preview = (f) => { if (!f) return; selectedFile = f; $("#pfilename").textContent = "✔ " + f.name + " (will be uploaded when you publish)"; const old = $("img", drop); if (old) old.remove(); if (f.type.startsWith("image/")) { const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im); } };
+    const preview = (f) => {
+      if (!f) return;
+      const old = $("img", drop); if (old) old.remove();
+      if (!isAllowedImage(f)) {
+        selectedFile = null;
+        file.value = "";
+        $("#pfilename").textContent = IMAGE_TYPE_ERROR;
+        $("#pfilename").classList.add("err");
+        toast(IMAGE_TYPE_ERROR, "warn");
+        return;
+      }
+      selectedFile = f;
+      $("#pfilename").classList.remove("err");
+      $("#pfilename").textContent = "✔ " + f.name + " (will be uploaded when you publish)";
+      const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im);
+    };
     drop.addEventListener("drop", (e) => preview(e.dataTransfer.files[0]));
     file.addEventListener("change", () => preview(file.files[0]));
     const val = () => ({ name: $("#pname").value.trim(), pitch: pitch.value.trim(), link: $("#plink").value.trim(), repo: $("#prepo").value.trim(), code: $("#pcode").value, prompts: $("#pprompts").value, tools: $$("input[name=tools]:checked").map((i) => i.value), tags: $$("input[name=tags]:checked").map((i) => i.value), fb: ($("input[name=fb]:checked") || {}).value || "vibes" });
@@ -1626,8 +1658,13 @@ ${giscus(t.number)}`;
         $("#native-auth")?.remove();
         setAlert(editPost ? "<b>Looks clean! Saving…</b>" : "<b>Looks clean! Publishing…</b>");
 
+        if (selectedFile && !isAllowedImage(selectedFile)) {
+          setAlert(`<b>${esc(IMAGE_TYPE_ERROR)}</b>`, "warn");
+          return;
+        }
+
         let image_key;
-        if (selectedFile && selectedFile.type.startsWith("image/")) {
+        if (selectedFile && isAllowedImage(selectedFile)) {
           const blob = await VGN.resizeImage(selectedFile);
           const uploaded = await VGN.uploadImage(blob);
           image_key = uploaded.key;

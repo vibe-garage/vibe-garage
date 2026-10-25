@@ -107,6 +107,17 @@ def run(page, email):
 
     page.goto(f"{BASE}/submit.html", wait_until="domcontentloaded")
     page.wait_for_selector("#wizard", timeout=15000)
+    screenshot_label = page.locator(".flabel", has_text="Screenshot").first
+    screenshot_label_text = screenshot_label.inner_text() if screenshot_label.count() else ""
+    check(
+        "screenshot label reads Screenshot",
+        screenshot_label_text.strip().startswith("Screenshot")
+        and "optional" in screenshot_label_text,
+    )
+    check(
+        "screenshot input accepts PNG, JPEG and WebP",
+        page.locator("#pfile").get_attribute("accept") == "image/png,image/jpeg,image/webp",
+    )
     page.click("#next")
     name_hint = page.locator(".hint", has_text="Give your project a name").first
     check(
@@ -174,7 +185,7 @@ def run(page, email):
         "project page shows the code",
         "func hit_stop" in page.locator("#pdetail pre.code").inner_text(),
     )
-    check("project page shows feedback wanted", "Feedback wanted: Gentle tips" in detail)
+    check("native project page hides feedback wanted", "Feedback wanted" not in detail)
     check("project page shows the builder", "Lexi Volt" in detail)
     check(
         "project page has no giscus iframe",

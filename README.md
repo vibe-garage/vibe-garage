@@ -12,14 +12,14 @@ A community hub for people who build with AI: a project showcase, a forum, chall
 - **Backend config** lives in `assets/config.js` (repo, category names, giscus theme, site URL, analytics). The sync script loads that same file.
 - **Site guides** are listed once in `assets/config.js` under `siteGuides` (`href`, `title`, `summary`, `tags`, `keywords`, `published`). Each entry shows as a card with a "Guide" tag in Fresh Drops on the homepage, and also appears at the top of `learn.html` and in site search. The homepage Guides section lists only guides that didn't fit in Fresh Drops, and it hides itself when there are none (the Fresh Drops header links to All guides). To add a guide page, add one entry, then run `node scripts/cache-bust.mjs`. The hand-written cards in `index.html` and `learn.html` are the no-JS fallback; the script replaces them from `siteGuides`.
 
-The site is plain HTML, CSS, and vanilla JS on GitHub Pages. There is no build step and no npm install.
+The site is plain HTML, CSS, and vanilla JS served by the Cloudflare Worker. There is no build step and no npm install.
 
 ## Native accounts and posts (v1)
 
 Vibe Garage has its own email/password accounts for projects and guides. The Cloudflare Worker in `worker/` serves the API and the static files; D1 stores the data and KV stores uploaded images.
 
 - **D1 tables.** `users` (email, password hash, display name, avatar key, bio), `sessions` (hashed session tokens), `posts` (kind `project` or `guide`, Markdown body, pitch, links, code, prompts, tools, tags, feedback level, image key, timestamps, soft-delete), and `rate_limits`.
-- **Routes.** `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET/PATCH /api/me`, `PUT /api/me/avatar`, `GET/POST /api/posts`, `GET/PATCH/DELETE /api/posts/:id`, `GET /api/users/:id`, `PUT /api/images`. Images are served from `/img/:key`.
+- **Routes.** `GET /api/config`, `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET/PATCH /api/me`, `PUT /api/me/avatar`, `GET/POST /api/posts`, `GET/PATCH/DELETE /api/posts/:id`, `GET /api/users/:id`, `PUT /api/images`. Images are served from `/img/:key`.
 - **Pages.** Account settings live at `account.html`, native profiles at `profile.html?n=<userId>`, native projects at `project.html?id=vg-<postId>`, and native guides at `learn.html?p=<postId>`. The submit wizard edits projects with `submit.html?edit=<postId>` and guides with `submit.html?kind=guide&edit=<postId>`.
 - **Local development.**
   ```sh
@@ -43,7 +43,7 @@ Vibe Garage has its own email/password accounts for projects and guides. The Clo
 | `leaderboard.html` | Ranked builders from `data/members.json` (`projects*10 + threads*3 + replies*1 + reactions`) |
 | `submit.html` | Three-step project form with the leaked-secret check. `?challenge=N` pre-fills `Challenge: #N` and a `challenge` tag |
 | `guidelines.html` | Community guidelines, reporting, moderation |
-| `404.html` | Missing-page screen. Asset and in-site links use root-absolute `/` paths (custom domain) so GitHub Pages can serve it at any depth |
+| `404.html` | Missing-page screen. Asset and in-site links use root-absolute `/` paths (custom domain) so the Worker can serve it at any depth |
 
 ## On the site
 
@@ -124,7 +124,7 @@ The giscus theme stylesheets (`giscus-theme.css` and `giscus-theme-light.css`) a
 
 ## Refreshing the snapshot
 
-The site is served by GitHub Pages straight from `main`; no build step is needed. To refresh the snapshot by hand, use a checkout with the [`gh`](https://cli.github.com/) CLI logged in (`gh auth login`) or with `GITHUB_TOKEN` set:
+The site is served by the Cloudflare Worker; a push to `main` runs the sync-and-deploy workflow. No build step is needed. To refresh the snapshot by hand, use a checkout with the [`gh`](https://cli.github.com/) CLI logged in (`gh auth login`) or with `GITHUB_TOKEN` set:
 
 ```bash
 ./scripts/refresh.sh
@@ -137,7 +137,7 @@ The site is served by GitHub Pages straight from `main`; no build step is needed
 3. `node scripts/sync-discussions.mjs`.
 4. If `data/`, `feed.xml`, `sitemap.xml`, or `robots.txt` changed beyond the JSON `"generated"` timestamp, `git add` those paths, commit `Sync discussions snapshot`, and `push`.
 
-A run that only refreshes `"generated"` does not create a commit. The script does not deploy anything itself; GitHub Pages rebuilds the live site from `main` after the push.
+A run that only refreshes `"generated"` does not create a commit. The script does not deploy anything itself; the workflow deploys the Worker after the push.
 
 To regenerate the files without committing:
 

@@ -1,4 +1,4 @@
-import { error, sameOrigin, HttpError } from "./http.js";
+import { error, json, sameOrigin, HttpError } from "./http.js";
 import { signup, login, logout, me, updateMe } from "./auth.js";
 import {
   listPosts,
@@ -10,7 +10,12 @@ import {
 } from "./posts.js";
 import { uploadImage, uploadAvatar, serveImage } from "./images.js";
 
+async function config(request, env) {
+  return json({ turnstileSiteKey: env.TURNSTILE_SITEKEY || "" });
+}
+
 const routes = [
+  { method: "GET", path: "/api/config", handler: config },
   { method: "POST", path: "/api/auth/signup", handler: signup },
   { method: "POST", path: "/api/auth/login", handler: login },
   { method: "POST", path: "/api/auth/logout", handler: logout },
@@ -34,7 +39,11 @@ function matchPath(pattern, pathname) {
   const params = {};
   for (let i = 0; i < expected.length; i += 1) {
     if (expected[i].startsWith(":")) {
-      params[expected[i].slice(1)] = decodeURIComponent(actual[i]);
+      try {
+        params[expected[i].slice(1)] = decodeURIComponent(actual[i]);
+      } catch {
+        return null;
+      }
     } else if (expected[i] !== actual[i]) {
       return null;
     }

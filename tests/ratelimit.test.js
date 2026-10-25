@@ -91,4 +91,30 @@ describe("rate limits", () => {
     expect(eleventh.response.status).toBe(429);
     expect(eleventh.data.error.code).toBe("rate_limited");
   });
+
+  it("blocks the thirty-first post edit in an hour", async () => {
+    const user = await signupUser();
+    const created = await createPost(user.cookie, POST_BODY, user.ip);
+    expect(created.response.status).toBe(201);
+    const postId = created.data.post.id;
+
+    for (let index = 0; index < 30; index += 1) {
+      const response = await api(`/api/posts/${encodeURIComponent(postId)}`, {
+        method: "PATCH",
+        cookie: user.cookie,
+        ip: user.ip,
+        body: { pitch: `Edit number ${index}` },
+      });
+      expect(response.status).toBe(200);
+    }
+
+    const blocked = await api(`/api/posts/${encodeURIComponent(postId)}`, {
+      method: "PATCH",
+      cookie: user.cookie,
+      ip: user.ip,
+      body: { pitch: "One edit too many" },
+    });
+    expect(blocked.status).toBe(429);
+    expect((await readJson(blocked)).error.code).toBe("rate_limited");
+  });
 });

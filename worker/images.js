@@ -70,6 +70,14 @@ async function allowImageUpload(env, userId) {
   return hit(env, `img:user:${userId}`, 20, 86400);
 }
 
+async function recordImage(env, key, userId, image) {
+  await env.DB.prepare(
+    "INSERT INTO images (key, user_id, type, size, created_at) VALUES (?1, ?2, ?3, ?4, ?5)"
+  )
+    .bind(key, userId, image.type, image.bytes.byteLength, nowSec())
+    .run();
+}
+
 export async function uploadImage(request, env) {
   const user = await getUser(request, env);
   if (!user) {
@@ -86,6 +94,7 @@ export async function uploadImage(request, env) {
   await env.IMAGES.put(key, image.bytes, {
     metadata: { type: image.type, owner: user.id, created_at: nowSec() },
   });
+  await recordImage(env, key, user.id, image);
 
   return json({ key, url: `/img/${key}` }, 201);
 }
@@ -106,6 +115,7 @@ export async function uploadAvatar(request, env) {
   await env.IMAGES.put(key, image.bytes, {
     metadata: { type: image.type, owner: user.id, created_at: nowSec() },
   });
+  await recordImage(env, key, user.id, image);
   await env.DB.prepare("UPDATE users SET avatar_key = ?1 WHERE id = ?2")
     .bind(key, user.id)
     .run();

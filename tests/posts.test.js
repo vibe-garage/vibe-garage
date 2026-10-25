@@ -237,4 +237,10 @@ describe("posts", () => {
     expect(payload.posts.some((post) => post.id === postId)).toBe(false);
     expect(JSON.stringify(payload)).not.toContain(owner.email);
   });
+
+  it("returns 404 for malformed percent-encoding in a path parameter", async () => {
+    const response = await api("/api/posts/%E0");
+    expect(response.status).toBe(404);
+    expect((await readJson(response)).error.code).toBe("not_found");
+  });
 });

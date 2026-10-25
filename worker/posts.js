@@ -132,8 +132,11 @@ function scanSecrets(parts) {
 
 async function readImageMetadata(env, key) {
   if (typeof key !== "string" || !key) return null;
-  const result = await env.IMAGES.getWithMetadata(key, "arrayBuffer");
-  return result ? result.metadata || null : null;
+  return env.DB.prepare(
+    "SELECT key, user_id AS owner, type, size, created_at FROM images WHERE key = ?1"
+  )
+    .bind(key)
+    .first();
 }
 
 async function validatePost(body, { partial, current, env, userId }) {
@@ -341,6 +344,10 @@ export async function updatePost(request, env, ctx, params) {
   const user = await getUser(request, env);
   if (!user) {
     return error(401, "not_signed_in", "Sign in to edit a post.");
+  }
+
+  if (!(await hit(env, `edit:user:${user.id}`, 30, 3600))) {
+    return error(429, "rate_limited", "You have reached the edit limit. Try again later.");
   }
 
   const current = await findPost(env, params.id);
