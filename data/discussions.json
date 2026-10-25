@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-25T05:58:43.897Z",
+ "generated": "2026-10-25T06:04:35.787Z",
  "repo": "vibe-garage/vibe-garage",
  "categories": [
   {
@@ -69,7 +69,7 @@
    "title": "👋 Welcome to Vibe Garage: start here + house rules",
    "by": "firestarterxox",
    "avatar": "https://avatars.githubusercontent.com/u/154112817?s=80&v=4",
-   "fb": "tear",
+   "fb": "",
    "replies": 0,
    "reactions": {
     "thumbsUp": 0,
@@ -84,9 +84,9 @@
     "total": 0
    },
    "createdAt": "2026-10-21T00:17:55Z",
-   "updatedAt": "2026-10-25T05:52:07Z",
+   "updatedAt": "2026-10-25T06:04:29Z",
    "url": "https://github.com/vibe-garage/vibe-garage/discussions/1",
-   "bodyHTML": "<p dir=\"auto\">👋 <strong>Welcome to Vibe Garage</strong>, a cozy late-night hangout for people who build with AI. Half-finished is welcome here, and nobody gets roasted for not knowing what a pointer is.</p>\n<p dir=\"auto\">Website: <a href=\"https://vibegarage.neozonesproductions.com/\" rel=\"nofollow\">https://vibegarage.neozonesproductions.com/</a></p>\n<h2 dir=\"auto\">How it works</h2>\n<ul dir=\"auto\">\n<li><strong>Share a project:</strong> use the <a href=\"https://vibegarage.neozonesproductions.com/submit.html\" rel=\"nofollow\">Submit form</a>. It checks for leaked API keys, then posts your project on Vibe Garage under your account display name.</li>\n<li><strong>Forum channels:</strong> the forum runs on GitHub Discussions, with Show &amp; Tell, Help Me Unstick, Prompt Craft, Tools &amp; Models, Newbie Corner and Off-Topic Lounge.</li>\n<li><strong>Feedback level:</strong> every post says what kind of feedback the author wants: 💜 <em>Just vibes</em> (hype only), 🌱 <em>Gentle tips</em> (kind suggestions), or 🔥 <em>Tear it apart</em> (honest, never personal). Please respect it.</li>\n</ul>\n<h2 dir=\"auto\">House rules (short on purpose)</h2>\n<ol dir=\"auto\">\n<li><strong>Be kind, always.</strong> Assume good intent. Everyone started somewhere.</li>\n<li><strong>No gatekeeping, no skill-shaming.</strong> Building with AI is real building. Beginner questions are explicitly welcome.</li>\n<li><strong>Respect the feedback level</strong> the author asked for.</li>\n<li><strong>Lift people up.</strong> Use reactions generously; mark helpful answers.</li>\n<li><strong>Keep secrets secret.</strong> Never post API keys, passwords or personal data.</li>\n<li><strong>Credit and honesty.</strong> Say where code, assets or ideas came from.</li>\n<li><strong>Reporting is easy.</strong> Use the <code class=\"notranslate\">···</code> menu on any post → <em>Report content</em>. The founder will take a look.</li>\n<li><strong>Volunteer moderator roles</strong> will open as the community grows.</li>\n</ol>\n<p dir=\"auto\">Full guidelines: <a href=\"https://vibegarage.neozonesproductions.com/guidelines.html\" rel=\"nofollow\">https://vibegarage.neozonesproductions.com/guidelines.html</a></p>\n<p dir=\"auto\">Say hi below: what are you building this week? ✨</p>",
+   "bodyHTML": "<p dir=\"auto\">👋 <strong>Welcome to Vibe Garage</strong>, a cozy late-night hangout for people who build with AI. Half-finished is welcome here, and nobody gets roasted for not knowing what a pointer is.</p>\n<p dir=\"auto\">Website: <a href=\"https://vibegarage.neozonesproductions.com/\" rel=\"nofollow\">https://vibegarage.neozonesproductions.com/</a></p>\n<h2 dir=\"auto\">How it works</h2>\n<ul dir=\"auto\">\n<li><strong>Share a project:</strong> use the <a href=\"https://vibegarage.neozonesproductions.com/submit.html\" rel=\"nofollow\">Submit form</a>. It checks for leaked API keys, then posts your project on Vibe Garage under your account display name.</li>\n<li><strong>Forum channels:</strong> the forum runs on GitHub Discussions, with Show &amp; Tell, Help Me Unstick, Prompt Craft, Tools &amp; Models, Newbie Corner and Off-Topic Lounge.</li>\n</ul>\n<h2 dir=\"auto\">House rules (short on purpose)</h2>\n<ol dir=\"auto\">\n<li><strong>Be kind, always.</strong> Assume good intent. Everyone started somewhere.</li>\n<li><strong>No gatekeeping, no skill-shaming.</strong> Building with AI is real building. Beginner questions are explicitly welcome.</li>\n<li><strong>Lift people up.</strong> Use reactions generously; mark helpful answers.</li>\n<li><strong>Keep secrets secret.</strong> Never post API keys, passwords or personal data.</li>\n<li><strong>Credit and honesty.</strong> Say where code, assets or ideas came from.</li>\n<li><strong>Reporting is easy.</strong> Use the <code class=\"notranslate\">···</code> menu on any post → <em>Report content</em>. The founder will take a look.</li>\n<li><strong>Volunteer moderator roles</strong> will open as the community grows.</li>\n</ol>\n<p dir=\"auto\">Full guidelines: <a href=\"https://vibegarage.neozonesproductions.com/guidelines.html\" rel=\"nofollow\">https://vibegarage.neozonesproductions.com/guidelines.html</a></p>\n<p dir=\"auto\">Say hi below: what are you building this week? ✨</p>",
    "pinned": true,
    "real": true
   }
