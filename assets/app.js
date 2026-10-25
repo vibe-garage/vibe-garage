@@ -997,8 +997,8 @@
 <div class="panel reveal" style="margin-top:22px"><h3>${ic("code")} The code</h3><p class="muted" style="margin-top:0">${repo ? `${ic("git-branch")} <a class="mono" href="${esc(repo)}" target="_blank" rel="noopener noreferrer">${esc(repo.replace(/^https:\/\/github.com\//, "github.com/"))}</a>` : "No repo linked."}</p>${code ? `<div style="position:relative"><pre class="code">${esc(code)}</pre><button type="button" class="btn ghost sm copy" data-copy>${ic("code")} Copy</button></div>` : `<p class="muted">No code pasted.</p>`}</div>
 <div class="panel reveal"><h3>${ic("wand-sparkles")} Prompts they shared</h3><p class="muted" style="margin-top:0">The secret sauce. Steal freely.</p>${(p.prompts || []).map((x) => `<div class="prompt">${ic("terminal")}${esc(x)}</div>`).join("") || `<p class="muted">No prompts shared.</p>`}</div>
 <div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, p.name)}</div></div>
-<aside><div class="panel glass">${feedbackBlock}
-${live ? `<p style="margin:18px 0 6px"><a class="btn" style="width:100%" href="${esc(live)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open it live</a></p>` : ""}</div>
+<aside>${feedbackBlock || live ? `<div class="panel glass">${feedbackBlock}
+${live ? `<p style="margin:18px 0 6px"><a class="btn" style="width:100%" href="${esc(live)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open it live</a></p>` : ""}</div>` : ""}
 ${native ? "" : reactionBlock(p.reactions, p.discussionUrl)}
 <div class="panel"><h3>${ic("user")} Builder</h3><div style="display:flex;gap:12px;align-items:center">${native ? whoNative(author, p.avatar, p.byId) : who(author, p.avatar)}</div></div>
 ${isOwner ? ownerPanel(url("submit.html?edit=" + encodeURIComponent(p.postId))) : ""}</aside></div>
