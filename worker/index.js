@@ -1,5 +1,14 @@
 import { error, sameOrigin, HttpError } from "./http.js";
 import { signup, login, logout, me, updateMe } from "./auth.js";
+import {
+  listPosts,
+  getPost,
+  createPost,
+  updatePost,
+  deletePost,
+  getUserProfile,
+} from "./posts.js";
+import { uploadImage, uploadAvatar, serveImage } from "./images.js";
 
 const routes = [
   { method: "POST", path: "/api/auth/signup", handler: signup },
@@ -7,7 +16,14 @@ const routes = [
   { method: "POST", path: "/api/auth/logout", handler: logout },
   { method: "GET", path: "/api/me", handler: me },
   { method: "PATCH", path: "/api/me", handler: updateMe },
-  // Batch 2: /api/posts and /api/users/:id routes are registered here.
+  { method: "PUT", path: "/api/me/avatar", handler: uploadAvatar },
+  { method: "GET", path: "/api/posts", handler: listPosts },
+  { method: "POST", path: "/api/posts", handler: createPost },
+  { method: "GET", path: "/api/posts/:id", handler: getPost },
+  { method: "PATCH", path: "/api/posts/:id", handler: updatePost },
+  { method: "DELETE", path: "/api/posts/:id", handler: deletePost },
+  { method: "GET", path: "/api/users/:id", handler: getUserProfile },
+  { method: "PUT", path: "/api/images", handler: uploadImage },
 ];
 
 function matchPath(pattern, pathname) {
@@ -71,7 +87,15 @@ export default {
       return handleApi(request, env, ctx);
     }
 
-    // Batch 2: /img/:key is served from KV here.
+    if (url.pathname.startsWith("/img/")) {
+      let key = "";
+      try {
+        key = decodeURIComponent(url.pathname.slice("/img/".length));
+      } catch {
+        return error(404, "not_found", "Not found.");
+      }
+      return serveImage(request, env, key);
+    }
 
     return env.ASSETS.fetch(request);
   },

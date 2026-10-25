@@ -5,6 +5,7 @@
   const D = window.VG_DATA || { tools: [], channels: [], members: [] };
   const I = window.VG_ICONS || {};
   const C = window.VG_CONFIG || {};
+  const nativePosts = Boolean(C.nativePosts);
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -87,7 +88,7 @@
   }
   function giscus(number) {
     if (!(C.giscus && C.giscus.enabled) || !number) return "";
-    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Sign in with GitHub to reply or react. Comments live in GitHub Discussions.</p><div class="giscus"></div></div>`;
+    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Replies and reactions here use a GitHub account. Comments live in GitHub Discussions.</p><div class="giscus"></div></div>`;
   }
   function mountGiscus(number) {
     const box = $(".giscus");
@@ -908,8 +909,12 @@ ${giscus(t.number)}`;
       const fg = $("#featured-guides");
       if (fg && siteGuides().length) fg.innerHTML = siteGuides().map((sg) => siteGuideCard(sg)).join("");
       const [data, slug] = await Promise.all([guidesJSON(), api.categorySlug("prompt-craft")]);
-      const write = api.newDiscussionUrl(slug, "[Guide] ", "What this guide covers:\n\n");
-      $$("[data-guide]").forEach((a) => { a.href = write; });
+      const write = nativePosts ? url("submit.html?kind=guide") : api.newDiscussionUrl(slug, "[Guide] ", "What this guide covers:\n\n");
+      const writeAttrs = nativePosts ? "" : ' target="_blank" rel="noopener noreferrer"';
+      $$("[data-guide]").forEach((a) => {
+        a.href = write;
+        if (nativePosts) { a.removeAttribute("target"); a.removeAttribute("rel"); }
+      });
       const guides = data.guides || [];
       const num = qs("g");
       if (num) {
@@ -924,7 +929,7 @@ ${giscus(t.number)}`;
         const author = guide.by || (guide.author && guide.author.login) || "ghost";
         const canon = setSeo({ title: (guide.title || "Guide") + " · Vibe Garage", description: guide.excerpt || guide.title, path: "learn.html?g=" + encodeURIComponent(guide.number) });
         const tags = (guide.tags || guide.labels || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
-        host.innerHTML = `<div class="page-head"><a class="kicker" href="${url("learn.html")}">${ic("arrow-left")} all guides</a><h1 style="margin-top:.35em">${esc(guide.title || "Guide")}</h1><p>${who(author, guide.avatar || (guide.author && guide.author.avatar))} · ${esc(day(guide.createdAt) || "")}</p><div class="tags">${tags}</div></div><article class="post op reveal"><div class="gh-body">${guide.bodyHTML ? sanitize(guide.bodyHTML) : "<p class=\"muted\">This guide has no body text.</p>"}</div></article><div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, guide.title || "Guide")}</div>${reactionBlock(guide.reactions, guide.discussionUrl || guide.url)}<p><a class="btn ghost sm" data-guide target="_blank" rel="noopener noreferrer" href="${esc(write)}">${ic("book-open")} Write a guide</a></p>`;
+        host.innerHTML = `<div class="page-head"><a class="kicker" href="${url("learn.html")}">${ic("arrow-left")} all guides</a><h1 style="margin-top:.35em">${esc(guide.title || "Guide")}</h1><p>${who(author, guide.avatar || (guide.author && guide.author.avatar))} · ${esc(day(guide.createdAt) || "")}</p><div class="tags">${tags}</div></div><article class="post op reveal"><div class="gh-body">${guide.bodyHTML ? sanitize(guide.bodyHTML) : "<p class=\"muted\">This guide has no body text.</p>"}</div></article><div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, guide.title || "Guide")}</div>${reactionBlock(guide.reactions, guide.discussionUrl || guide.url)}<p><a class="btn ghost sm" data-guide${writeAttrs} href="${esc(write)}">${ic("book-open")} Write a guide</a></p>`;
         bindShare(host);
         reveal(host);
         return;
@@ -932,7 +937,7 @@ ${giscus(t.number)}`;
       if (!g) return;
       if (!guides.length) {
         g.style.display = "block";
-        g.innerHTML = empty("No community guides yet", "Figured something out the hard way? Write it up and it can become the first community guide in the library.", `<a class="btn sm" data-guide target="_blank" rel="noopener noreferrer" href="${esc(write)}">${ic("book-open")} Write a guide</a>`);
+        g.innerHTML = empty("No community guides yet", "Figured something out the hard way? Write it up and it can become the first community guide in the library.", `<a class="btn sm" data-guide${writeAttrs} href="${esc(write)}">${ic("book-open")} Write a guide</a>`);
         reveal(g);
         return;
       }
@@ -968,7 +973,7 @@ ${giscus(t.number)}`;
       const draw = () => {
         const q = (input && input.value || "").trim().toLowerCase();
         const list = members.filter((m) => !q || String(m.login).toLowerCase().includes(q)).slice().sort((a, b) => (b.score || 0) - (a.score || 0) || String(a.login).localeCompare(String(b.login)));
-        box.innerHTML = list.length ? `<ol class="board">${list.map((m, i) => memberRow(m, i + 1)).join("")}</ol>` : members.length ? empty("No builders match", "Try a different name.", "") : empty("No builders yet", "Be the first to post a project or a thread. Your GitHub account becomes your profile.", `<a class="btn sm" href="${url("submit.html")}">${ic("rocket")} Submit a project</a>`);
+        box.innerHTML = list.length ? `<ol class="board">${list.map((m, i) => memberRow(m, i + 1)).join("")}</ol>` : members.length ? empty("No builders match", "Try a different name.", "") : empty("No builders yet", "Be the first to post a project or a guide. Your Vibe Garage account becomes your profile.", `<a class="btn sm" href="${url("submit.html")}">${ic("rocket")} Submit a project</a>`);
         reveal(box);
       };
       input?.addEventListener("input", draw);
@@ -987,13 +992,150 @@ ${giscus(t.number)}`;
       box.innerHTML = note + list;
       reveal(box);
     },
-    submit() { if ($("#wizard")) wizard(); }
+    submit() {
+      if (nativePosts && qs("kind") === "guide") { guideForm(); return; }
+      if ($("#wizard")) wizard();
+    }
   };
 
   const PATTERNS = [[/sk-(?:proj-|ant-)?[A-Za-z0-9_\-]{16,}/g, "OpenAI/Anthropic-style key (sk-…)"], [/xai-[A-Za-z0-9]{20,}/g, "xAI-style key (xai-…)"], [/gh[pousr]_[A-Za-z0-9]{20,}/g, "GitHub token (ghp_…)"], [/github_pat_[A-Za-z0-9_]{20,}/g, "GitHub fine-grained token"], [/AKIA[0-9A-Z]{16}/g, "AWS access key ID (AKIA…)"], [/AIza[0-9A-Za-z_\-]{30,}/g, "Google API key (AIza…)"], [/xox[abpr]-[A-Za-z0-9\-]{10,}/g, "Slack token (xox…)"], [/-----BEGIN [A-Z ]*PRIVATE KEY-----/g, "Private key block"], [/\b(?:password|passwd|pwd|secret|api[_-]?key|token)\s*[:=]\s*["']?[^\s"']{4,}/gi, "Hard-coded password/secret"]];
   function scanSecrets(fields) { const hits = []; for (const [label, v] of Object.entries(fields)) for (const [re, name] of PATTERNS) { re.lastIndex = 0; let m; while ((m = re.exec(v || ""))) { const s = m[0]; hits.push(`${label}: ${name} → ${s.slice(0, 6)}${"•".repeat(Math.min(10, Math.max(3, s.length - 6)))}`); } } return hits; }
   window.VG.scanSecrets = scanSecrets;
   function challengeNumber() { const raw = String(qs("challenge") || "").replace(/^#/, "").trim(); return /^\d+$/.test(raw) ? raw : ""; }
+  function guideForm() {
+    const form = $("#guide-form");
+    if (!form) return;
+
+    const wiz = $("#wizard");
+    if (wiz) wiz.style.display = "none";
+    $$(".progress, .steps").forEach((el) => { el.style.display = "none"; });
+    const head = $(".page-head");
+    if (head) {
+      const heading = $("h1", head);
+      if (heading) heading.innerHTML = `Write a <span class="grad-text">guide</span>`;
+      const intro = $("p", head);
+      if (intro) intro.textContent = "Teach one small thing you figured out. Markdown is welcome, and the garage learns from your notes.";
+    }
+    form.hidden = false;
+    setSeo({
+      title: "Write a guide · Vibe Garage",
+      description: "Write a Vibe Garage guide and publish it under your account display name.",
+      path: "submit.html?kind=guide"
+    });
+
+    const title = $("#gtitle");
+    const body = $("#gbody");
+    const link = $("#glink");
+    const tagsInput = $("#gtags");
+    const coverInput = $("#gcover");
+    const coverName = $("#gcovername");
+    const count = $("#gbodycount");
+    const publishButton = $("#guidePublish");
+    const alertBox = $("#guideAlert");
+    const alertBody = $("#guideAlertBody");
+    let coverFile = null;
+    let busy = false;
+
+    const updateCount = () => { if (count) count.textContent = `${body.value.length}/50000`; };
+    body.addEventListener("input", updateCount);
+    updateCount();
+
+    coverInput?.addEventListener("change", () => {
+      coverFile = (coverInput.files && coverInput.files[0]) || null;
+      if (coverName) coverName.textContent = coverFile ? "✔ " + coverFile.name : "";
+    });
+
+    const showError = (message) => {
+      if (alertBody) alertBody.innerHTML = esc(message);
+      if (alertBox) alertBox.classList.add("show");
+      toast(message, "warn");
+    };
+    const showSecret = (hits) => {
+      if (alertBody) alertBody.innerHTML = `<b>Hold up! This looks like a secret.</b> We found something that could be a key or password. Remove it before publishing:<ul>${hits.map((hit) => `<li>${esc(hit)}</li>`).join("")}</ul>`;
+      if (alertBox) alertBox.classList.add("show");
+      toast("Possible secret found. Not published", "warn");
+    };
+
+    async function publish() {
+      if (busy) return;
+      if (!window.VGN) { showError("The publishing tools are still loading. Try again in a moment."); return; }
+
+      const guideTitle = title.value.trim();
+      const guideBody = body.value;
+      const guideLink = link.value.trim();
+      const rawTags = tagsInput.value;
+
+      if (guideTitle.length < 3 || guideTitle.length > 120) {
+        showError("Give your guide a title (3 to 120 characters).");
+        title.focus();
+        return;
+      }
+      if (guideBody.trim().length < 20) {
+        showError("Write at least 20 characters of guide body.");
+        body.focus();
+        return;
+      }
+      if (guideLink && !/^https:\/\/\S+$/.test(guideLink)) {
+        showError("Link must start with https://.");
+        link.focus();
+        return;
+      }
+
+      const hits = scanSecrets({ Title: guideTitle, "Guide body": guideBody, Link: guideLink });
+      if (hits.length) { showSecret(hits); return; }
+      alertBox?.classList.remove("show");
+
+      busy = true;
+      if (publishButton) publishButton.disabled = true;
+      try {
+        let user = null;
+        try {
+          user = await VGN.me();
+        } catch (err) {
+          showError(err.message || "Could not check your account.");
+          return;
+        }
+
+        if (!user) {
+          const host = $("#guide-auth");
+          host.innerHTML = "";
+          VGN.authPanel(host, { onDone: () => { host.innerHTML = ""; publish(); } });
+          host.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+          return;
+        }
+        $("#guide-auth")?.replaceChildren();
+
+        let image_key;
+        if (coverFile && coverFile.type.startsWith("image/")) {
+          const blob = await VGN.resizeImage(coverFile);
+          const uploaded = await VGN.uploadImage(blob);
+          image_key = uploaded.key;
+        }
+
+        const tags = rawTags.split(",").map((tag) => tag.trim().replace(/^#/, "")).filter(Boolean).slice(0, 12);
+        const post = await VGN.createPost({
+          kind: "guide",
+          title: guideTitle,
+          body_md: guideBody,
+          link: guideLink,
+          prompts: [],
+          tools: [],
+          tags,
+          image_key,
+        });
+
+        toast("Published!");
+        setTimeout(() => { location.href = url("learn.html?p=" + encodeURIComponent(post.id)); }, 900);
+      } catch (err) {
+        showError(err.message || "Could not publish. Try again.");
+      } finally {
+        busy = false;
+        if (publishButton) publishButton.disabled = false;
+      }
+    }
+
+    form.addEventListener("submit", (event) => { event.preventDefault(); publish(); });
+  }
   function wizard() {
     const wiz = $("#wizard");
     if (!wiz) return;
@@ -1005,7 +1147,7 @@ ${giscus(t.number)}`;
     if (challengeNum) {
       const note = document.createElement("div");
       note.className = "alert ok show";
-      note.innerHTML = `<div><b>Entering challenge #${esc(challengeNum)}.</b> The GitHub post will include a <span class="mono">Challenge: #${esc(challengeNum)}</span> line and a challenge tag.</div>`;
+      note.innerHTML = `<div><b>Entering challenge #${esc(challengeNum)}.</b> Your published project will include a <span class="mono">Challenge: #${esc(challengeNum)}</span> line and a challenge tag.</div>`;
       wiz.prepend(note);
       setSeo({ title: "Enter challenge #" + challengeNum + " · Vibe Garage", description: "Submit a Vibe Garage project for challenge #" + challengeNum + ".", path: "submit.html?challenge=" + challengeNum });
     }
@@ -1019,7 +1161,8 @@ ${giscus(t.number)}`;
     drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } });
     ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
     ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
-    const preview = (f) => { if (!f) return; $("#pfilename").textContent = "✔ " + f.name + " (preview only, stays on your device)"; const old = $("img", drop); if (old) old.remove(); if (f.type.startsWith("image/")) { const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im); } };
+    let selectedFile = null;
+    const preview = (f) => { if (!f) return; selectedFile = f; $("#pfilename").textContent = "✔ " + f.name + " (will be uploaded when you publish)"; const old = $("img", drop); if (old) old.remove(); if (f.type.startsWith("image/")) { const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im); } };
     drop.addEventListener("drop", (e) => preview(e.dataTransfer.files[0]));
     file.addEventListener("change", () => preview(file.files[0]));
     const val = () => ({ name: $("#pname").value.trim(), pitch: pitch.value.trim(), link: $("#plink").value.trim(), repo: $("#prepo").value.trim(), code: $("#pcode").value, prompts: $("#pprompts").value, tools: $$("input[name=tools]:checked").map((i) => i.value), tags: $$("input[name=tags]:checked").map((i) => i.value), fb: ($("input[name=fb]:checked") || {}).value || "vibes" });
@@ -1050,7 +1193,92 @@ ${giscus(t.number)}`;
     });
     back.addEventListener("click", () => { if (step > 1) { step--; show(); } });
     show();
+
+    async function nativePublish(v) {
+      const alertBox = $("#okAlert");
+      const setAlert = (html, status = "ok") => {
+        alertBox.classList.toggle("ok", status === "ok");
+        alertBox.classList.toggle("warn", status !== "ok");
+        $("#okAlert div").innerHTML = html;
+        alertBox.classList.add("show");
+      };
+
+      if (!window.VGN) {
+        toast("The publishing tools are still loading. Try again in a moment.", "warn");
+        return;
+      }
+      if (nativePublish.busy) return;
+      nativePublish.busy = true;
+
+      try {
+        let user = null;
+        try {
+          user = await VGN.me();
+        } catch (err) {
+          setAlert(`<b>${esc(err.message || "Could not check your account.")}</b>`, "warn");
+          return;
+        }
+
+        if (!user) {
+          setAlert("<b>Looks clean!</b> Sign in or create an account to publish.");
+          let host = $("#native-auth");
+          if (!host) {
+            host = document.createElement("div");
+            host.id = "native-auth";
+            wiz.appendChild(host);
+          }
+          host.innerHTML = "";
+          VGN.authPanel(host, { onDone: () => { host.remove(); nativePublish(v); } });
+          host.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+          return;
+        }
+        $("#native-auth")?.remove();
+        setAlert("<b>Looks clean! Publishing…</b>");
+
+        let image_key;
+        if (selectedFile && selectedFile.type.startsWith("image/")) {
+          const blob = await VGN.resizeImage(selectedFile);
+          const uploaded = await VGN.uploadImage(blob);
+          image_key = uploaded.key;
+        }
+
+        const tags = v.tags.slice();
+        if (challengeNum && !tags.includes("challenge")) tags.push("challenge");
+        const prompts = v.prompts.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+        const bodyMd = challengeNum ? "Challenge: #" + challengeNum : "";
+
+        const post = await VGN.createPost({
+          kind: "project",
+          title: v.name,
+          body_md: bodyMd,
+          pitch: v.pitch,
+          link: v.link,
+          repo: v.repo,
+          code: v.code,
+          prompts,
+          tools: v.tools,
+          tags,
+          feedback: v.fb,
+          image_key,
+        });
+
+        const target = url("project.html?id=vg-" + encodeURIComponent(post.id));
+        setAlert(`<b>Looks clean!</b> Published! Your project is live.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(target)}">${ic("external-link")} View your project</a></p>`);
+        toast("Published!");
+        setTimeout(() => { location.href = target; }, 1200);
+      } catch (err) {
+        setAlert(`<b>${esc(err.message || "Could not publish. Try again.")}</b>`, "warn");
+        toast(err.message || "Could not publish. Try again.", "warn");
+      } finally {
+        nativePublish.busy = false;
+      }
+    }
+
     window.VG.onPublish = async (v) => {
+      if (nativePosts) {
+        await nativePublish(v);
+        return;
+      }
       const fbName = FB[v.fb][0];
       let code = v.code.trim();
       const limit = 3500;
@@ -1063,7 +1291,7 @@ ${giscus(t.number)}`;
       lines.push("### Pitch", v.pitch || "_No response_", "", "### Live link", v.link || "_No response_", "", "### Repo", v.repo || "_No response_", "", "### Tools", v.tools.join(", ") || "_No response_", "", "### Tags", tags.join(", ") || "_No response_", "", "### Feedback wanted", `${FB[v.fb][1]} ${fbName}`, "", "### Code", code ? "```\n" + code + "\n```" + (cut ? "\n_(trimmed, paste the rest below)_" : "") : "_No response_", "", "### Prompts", v.prompts.trim() ? v.prompts.trim().split(/\n+/).map((x) => "- " + x).join("\n") : "_No response_", "", "---", "_Posted from the Vibe Garage submit form. Add a screenshot by dragging it into this box!_");
       const body = lines.join("\n");
       const discuss = api.newDiscussionUrl(await api.categorySlug("projects"), "[Project] " + v.name, body);
-      $("#okAlert div").innerHTML = `<b>Looks clean! One last step on GitHub.</b> No secrets spotted. We opened a pre-filled post in a new tab. Sign in with GitHub, add your screenshot, and hit <b>Start discussion</b>. Your project shows up in the gallery shortly after.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(discuss)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the GitHub post</a></p>`;
+      $("#okAlert div").innerHTML = `<b>Looks clean! One last step on GitHub.</b> No secrets spotted. We opened a draft discussion in a new tab. Log in there, add your screenshot, and hit <b>Start discussion</b>. Your project shows up in the gallery shortly after.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(discuss)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the GitHub post</a></p>`;
       $("#okAlert").classList.add("show");
       window.VG.lastSubmitUrl = discuss;
       const w = window.open(discuss, "_blank");

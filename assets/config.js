@@ -1,5 +1,7 @@
 /* Vibe Garage backend config: GitHub Discussions + giscus. Shared by the front end and scripts/sync-discussions.mjs. */
 window.VG_CONFIG = {
+  nativePosts: true,
+  turnstileSiteKey: "1x00000000000000000000AA",
   repo: "vibe-garage/vibe-garage",
   repoId: "R_kgDOVRg6Zw",
   siteUrl: "https://vibegarage.neozonesproductions.com/",
