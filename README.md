@@ -1,6 +1,6 @@
 # Vibe Garage
 
-A community hub for people who build with AI: a project showcase, a forum, challenges, guides, and builder profiles. There are no separate accounts. You post, reply, and react with your own GitHub account.
+A community hub for people who build with AI: a project showcase, a forum, challenges, guides, and builder profiles. Projects and guides can be published with a native Vibe Garage account; forum threads, replies, reactions, and challenges still use GitHub Discussions.
 
 **Live site:** https://vibegarage.neozonesproductions.com/
 
@@ -13,6 +13,22 @@ A community hub for people who build with AI: a project showcase, a forum, chall
 - **Site guides** are listed once in `assets/config.js` under `siteGuides` (`href`, `title`, `summary`, `tags`, `keywords`, `published`). Each entry shows as a card with a "Guide" tag in Fresh Drops on the homepage, and also appears at the top of `learn.html` and in site search. The homepage Guides section lists only guides that didn't fit in Fresh Drops, and it hides itself when there are none (the Fresh Drops header links to All guides). To add a guide page, add one entry, then run `node scripts/cache-bust.mjs`. The hand-written cards in `index.html` and `learn.html` are the no-JS fallback; the script replaces them from `siteGuides`.
 
 The site is plain HTML, CSS, and vanilla JS on GitHub Pages. There is no build step and no npm install.
+
+## Native accounts and posts (v1)
+
+Vibe Garage has its own email/password accounts for projects and guides. The Cloudflare Worker in `worker/` serves the API and the static files; D1 stores the data and KV stores uploaded images.
+
+- **D1 tables.** `users` (email, password hash, display name, avatar key, bio), `sessions` (hashed session tokens), `posts` (kind `project` or `guide`, Markdown body, pitch, links, code, prompts, tools, tags, feedback level, image key, timestamps, soft-delete), and `rate_limits`.
+- **Routes.** `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET/PATCH /api/me`, `PUT /api/me/avatar`, `GET/POST /api/posts`, `GET/PATCH/DELETE /api/posts/:id`, `GET /api/users/:id`, `PUT /api/images`. Images are served from `/img/:key`.
+- **Pages.** Account settings live at `account.html`, native profiles at `profile.html?n=<userId>`, native projects at `project.html?id=vg-<postId>`, and native guides at `learn.html?p=<postId>`. The submit wizard edits projects with `submit.html?edit=<postId>` and guides with `submit.html?kind=guide&edit=<postId>`.
+- **Local development.**
+  ```sh
+  npm install
+  npx wrangler d1 migrations apply vibe_garage --local
+  npx wrangler dev --local
+  ```
+  Use Node 22 for Wrangler. The local D1 database lives under `.wrangler/state`.
+- **Still on GitHub.** Forum threads, replies, reactions, challenges, and their giscus embeds continue to use GitHub Discussions. Native projects show no giscus panel in v1.
 
 ## Pages
 

@@ -248,6 +248,7 @@
     let mode = "signin";
     let turnstileToken = null;
     let turnstileRendered = false;
+    const initialMode = options.mode === "signup" ? "signup" : "signin";
 
     function setError(message) {
       errorBox.textContent = message || "";
@@ -373,7 +374,7 @@
       }
     });
 
-    setMode("signin");
+    setMode(initialMode);
   }
 
   window.VGN = {

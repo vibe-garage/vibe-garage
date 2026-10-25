@@ -247,9 +247,10 @@ export async function logout(request, env) {
 export async function me(request, env) {
   const user = await getUser(request, env);
   if (!user) {
-    return error(401, "not_signed_in", "You are not signed in.");
+    // A session probe should not log a failed request in the browser console.
+    return json({ user: null }, 200, { "Cache-Control": "no-store" });
   }
-  return json({ user: selfUser(user) });
+  return json({ user: selfUser(user) }, 200, { "Cache-Control": "no-store" });
 }
 
 export async function updateMe(request, env) {

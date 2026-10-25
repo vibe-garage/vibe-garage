@@ -59,6 +59,16 @@ nav.main a.btn,nav.main a.btn:hover{color:var(--accent-ink);background:var(--acc
 nav.main a.on{color:var(--text);background:var(--wash)}
 .nav-cta{margin-left:6px}
 .bar-tools{display:flex;align-items:center;gap:6px;flex:none}
+.account-chip{display:inline-flex;align-items:center;gap:8px;max-width:190px;padding:5px 12px 5px 5px;border:1px solid var(--line2);border-radius:999px;color:var(--text);font-weight:600;font-size:.9rem}
+.account-chip:hover{color:var(--text);border-color:var(--accent);box-shadow:var(--glow-t)}
+.account-chip .av{width:28px;height:28px;font-size:.72rem}
+.account-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){.account-name{display:none}.account-chip{padding:4px}}
+.account-posts{list-style:none;margin:6px 0 0;padding:0}
+.account-post{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.account-post:first-child{border-top:0;padding-top:0}
+.account-post a:not(.btn){font-weight:600}
+.account-post small{display:block;margin-top:2px}
 .icon-btn,.burger{background:transparent;border:1px solid var(--line2);color:var(--text);border-radius:999px;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;padding:0}
 .icon-btn:hover,.burger:hover{border-color:var(--accent);color:var(--text);box-shadow:0 0 0 1px rgba(61,214,196,.25)}
 .burger{display:none}
