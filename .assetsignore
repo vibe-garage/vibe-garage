@@ -19,3 +19,6 @@ vitest.config.js
 .graphifyignore
 AGENTS.md
 README.md
+starters
+CNAME
+.nojekyll
