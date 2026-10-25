@@ -195,7 +195,7 @@
   }
   function giscus(number) {
     if (!(C.giscus && C.giscus.enabled) || !number) return "";
-    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Replies and reactions here use a GitHub account. Comments live in GitHub Discussions.</p><div class="giscus"></div></div>`;
+    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Replies and reactions run on GitHub Discussions.</p><div class="giscus"></div></div>`;
   }
   function mountGiscus(number) {
     const box = $(".giscus");
@@ -773,7 +773,7 @@
     if (footer && !footer.querySelector(".loop")) {
       const div = document.createElement("div");
       div.className = "loop";
-      div.innerHTML = `<div><h2>Stay in the loop</h2><p>New projects and threads land in the Atom feed. You can also watch the repo or follow Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="${url("feed.xml")}">Atom feed</a><a class="btn ghost sm" href="https://github.com/vibe-garage/vibe-garage/subscription" target="_blank" rel="noopener noreferrer">Watch the repo on GitHub</a><a class="btn ghost sm" href="https://github.com/${esc(C.repo || "vibe-garage/vibe-garage")}/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div>`;
+      div.innerHTML = `<div><h2>Stay in the loop</h2><p>Forum threads land in the Atom feed. You can also follow them in Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="${url("feed.xml")}">Atom feed</a><a class="btn ghost sm" href="https://github.com/${esc(C.repo || "vibe-garage/vibe-garage")}/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div>`;
       const cols = footer.querySelector(".cols");
       footer.insertBefore(div, cols || footer.firstChild);
     }
