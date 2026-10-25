@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ASSETS = ["style.css", "config.js", "data.js", "icons.js", "art.js", "app.js", "guide.js"];
+const ASSETS = ["style.css", "config.js", "data.js", "icons.js", "art.js", "md.js", "native.js", "app.js", "guide.js"];
 // Stylesheets referenced by URL string inside these scripts (the giscus iframe loads them).
 const JS_REFERENCED = ["giscus-theme.css", "giscus-theme-light.css"];
 const JS_FILES = ["app.js", "config.js"];

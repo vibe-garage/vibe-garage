@@ -1,0 +1,34 @@
+// D1 and KV IDs are filled in (they are not secrets).
+// TURNSTILE_SECRET is a Worker secret (wrangler secret put TURNSTILE_SECRET); never commit it.
+// Local development uses the Turnstile test secret from `.dev.vars`.
+{
+  "name": "vibe-garage",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-08-22",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/api/*", "/img/*"],
+    "not_found_handling": "404-page",
+    "html_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vibe_garage",
+      "database_id": "7561e0a1-a1e2-4fc1-b90b-31b702d1463c",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "IMAGES",
+      "id": "91456e3a5eba42a092ac412e87541c8b"
+    }
+  ],
+  "vars": {
+    "TURNSTILE_SITEKEY": "0x4AAAAAAFkxd8mu4IHKRiVt",
+    "SITE_ORIGIN": "https://vibegarage.neozonesproductions.com",
+    "PBKDF2_ITER": "20000"
+  }
+}

@@ -5,6 +5,10 @@
   const D = window.VG_DATA || { tools: [], channels: [], members: [] };
   const I = window.VG_ICONS || {};
   const C = window.VG_CONFIG || {};
+  const nativePosts = Boolean(C.nativePosts);
+  const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+  const IMAGE_TYPE_ERROR = "Use a PNG, JPEG or WebP image.";
+  const isAllowedImage = (file) => Boolean(file && IMAGE_TYPES.includes(file.type));
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -33,16 +37,120 @@
     return fetch(url(path), { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   }
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const hasNative = nativePosts && Boolean(window.VGN);
+  const isoFromSec = (value) => {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n <= 0) return "";
+    return new Date(n * 1000).toISOString();
+  };
+  const nativeChallenge = (md) => {
+    const match = String(md || "").match(/Challenge:\s*#(\d+)/i);
+    return match ? Number(match[1]) : null;
+  };
+  const plainText = (md) => String(md || "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*_`~[\]()]/g, " ")
+    .replace(/^\s*[-+]\s+/gm, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const mdHTML = (md) => {
+    try {
+      return window.VGMD && typeof window.VGMD.render === "function" ? window.VGMD.render(md) : `<p>${esc(md)}</p>`;
+    } catch (e) {
+      return `<p>${esc(md)}</p>`;
+    }
+  };
+  function normalizeNativeProject(post) {
+    const author = post.author || {};
+    return {
+      id: "vg-" + post.id,
+      native: true,
+      postId: post.id,
+      name: post.title,
+      by: author.display_name || "ghost",
+      byId: author.id || "",
+      avatar: author.avatar || "",
+      kind: "generic",
+      pitch: post.pitch || "",
+      tools: post.tools || [],
+      tags: post.tags || [],
+      fb: post.feedback || "vibes",
+      likes: 0,
+      comments: 0,
+      reactions: null,
+      url: post.link || "",
+      repo: post.repo || "",
+      code: post.code || "",
+      prompts: post.prompts || [],
+      image: post.image || "",
+      challenge: nativeChallenge(post.body_md),
+      discussionUrl: null,
+      createdAt: isoFromSec(post.created_at),
+      updatedAt: isoFromSec(post.updated_at),
+      real: true
+    };
+  }
+  function normalizeNativeGuide(post) {
+    const author = post.author || {};
+    const name = author.display_name || "ghost";
+    const text = plainText(post.body_md);
+    return {
+      id: "vg-" + post.id,
+      native: true,
+      postId: post.id,
+      title: post.title,
+      by: name,
+      byId: author.id || "",
+      author: { login: name, avatar: author.avatar || "" },
+      avatar: author.avatar || "",
+      bodyHTML: mdHTML(post.body_md),
+      excerpt: text.slice(0, 160),
+      tags: post.tags || [],
+      labels: post.tags || [],
+      reactions: null,
+      url: "learn.html?p=" + post.id,
+      discussionUrl: null,
+      createdAt: isoFromSec(post.created_at),
+      updatedAt: isoFromSec(post.updated_at),
+      link: post.link || "",
+      image: post.image || ""
+    };
+  }
+  let _nativeProjects = null;
+  let _nativeGuides = null;
+  const nativeProjectList = () => {
+    if (!hasNative) return Promise.resolve([]);
+    if (!_nativeProjects) {
+      _nativeProjects = VGN.listPosts({ kind: "project" }).then((rows) => rows.map(normalizeNativeProject)).catch(() => []);
+    }
+    return _nativeProjects;
+  };
+  const nativeGuideList = () => {
+    if (!hasNative) return Promise.resolve([]);
+    if (!_nativeGuides) {
+      _nativeGuides = VGN.listPosts({ kind: "guide" }).then((rows) => rows.map(normalizeNativeGuide)).catch(() => []);
+    }
+    return _nativeGuides;
+  };
   let _disc, _proj, _mem, _guides, _chal;
   const disc = () => _disc || (_disc = tryJSON("data/discussions.json").then((j) => j || { threads: [], categories: [] }));
   const projJSON = () => _proj || (_proj = tryJSON("data/projects.json").then((j) => j || { projects: [] }));
   const membersJSON = () => _mem || (_mem = tryJSON("data/members.json").then((j) => j || { members: [], score: "", weights: {}, commentSample: 50 }));
-  const guidesJSON = () => _guides || (_guides = tryJSON("data/guides.json").then((j) => j || { guides: [] }));
+  const guidesJSON = () => _guides || (_guides = Promise.all([tryJSON("data/guides.json"), nativeGuideList()]).then(([j, native]) => {
+    const data = j || { guides: [] };
+    return { ...data, guides: [...(native || []), ...(data.guides || [])] };
+  }));
   const challengesJSON = () => _chal || (_chal = tryJSON("data/challenges.json").then((j) => j || { challenges: [] }));
 
   const api = {
-    async projects() { const [real] = await Promise.all([projJSON(), wait(250)]); return real.projects || []; },
-    async project(id) { return ((await projJSON()).projects || []).find((p) => p.id === id); },
+    async projects() {
+      const [real, native] = await Promise.all([projJSON(), nativeProjectList(), wait(250)]);
+      return [...native, ...(real.projects || [])].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    },
+    async project(id) {
+      const [real, native] = await Promise.all([projJSON(), nativeProjectList()]);
+      return [...native, ...(real.projects || [])].find((p) => p.id === id || (p.native && p.postId === id));
+    },
     async threads() { const [j] = await Promise.all([disc(), wait(250)]); return j.threads || []; },
     async thread(id) { const t = ((await disc()).threads || []).find((row) => row.id === id); return t && { ...t, posts: t.posts || [] }; },
     async categorySlug(chan) {
@@ -87,7 +195,7 @@
   }
   function giscus(number) {
     if (!(C.giscus && C.giscus.enabled) || !number) return "";
-    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Sign in with GitHub to reply or react. Comments live in GitHub Discussions.</p><div class="giscus"></div></div>`;
+    return `<div class="panel glass reveal" id="comments"><h3>${ic("message-circle")} Replies &amp; reactions</h3><p class="muted" style="margin-top:0;font-size:.9rem">Replies and reactions here use a GitHub account. Comments live in GitHub Discussions.</p><div class="giscus"></div></div>`;
   }
   function mountGiscus(number) {
     const box = $(".giscus");
@@ -144,6 +252,12 @@
     const name = String(handle || "ghost");
     return `<a class="who" href="${url("profile.html?u=" + encodeURIComponent(name))}">${av(name, cls, img)}@${esc(name)}</a>`;
   }
+  function whoNative(name, avatar, userId, cls = "", link = true) {
+    const label = String(name || "ghost");
+    const inner = `${av(label, cls, avatar || "")}${esc(label)}`;
+    if (!link) return `<span class="who">${inner}</span>`;
+    return `<a class="who" href="${url("profile.html?n=" + encodeURIComponent(userId || ""))}">${inner}</a>`;
+  }
   const FB = { vibes: ["Just vibes", "💜", "No critique, hype only", "fb"], gentle: ["Gentle tips", "🌱", "Kind suggestions welcome", "fb gentle"], tear: ["Tear it apart", "🔥", "Brutal honesty, please", "fb tear"] };
   const toolColor = (n) => ((D.tools || []).find((t) => t.name === n) || {}).color || "#93a1b3";
   const toolTag = (n) => `<span class="tag tool"><span class="dot" style="color:${toolColor(n)}"></span>${esc(n)}</span>`;
@@ -163,8 +277,8 @@
     const href = url("project.html?id=" + encodeURIComponent(p.id));
     return `<article class="card reveal ${cls}"><a class="stretch" href="${href}"><span class="sr-only">${esc(p.name)}</span></a>${art(p, ribbon + rank)}
 <div class="body">${opts.cover ? `<div class="cover-tag">${ic("star")} Cover story · this week</div>` : ""}<h3>${esc(p.name)}</h3><p>${esc(p.pitch || "")}</p>
-<div class="tags">${(p.tools || []).map(toolTag).join("")}${opts.noFb ? "" : fbTag(p.fb)}</div>
-<div class="meta">${who(p.by, p.avatar)}<span>${ic("heart")} ${reacted(p)}</span><span>${ic("message-circle")} ${p.comments || 0}</span></div></div></article>`;
+<div class="tags">${(p.tools || []).map(toolTag).join("")}${opts.noFb || p.native ? "" : fbTag(p.fb)}</div>
+<div class="meta">${p.native ? whoNative(p.by, p.avatar, p.byId) : who(p.by, p.avatar)}<span>${ic("heart")} ${reacted(p)}</span><span>${ic("message-circle")} ${p.comments || 0}</span></div></div></article>`;
   }
   const skel = (n, cls = "") => Array.from({ length: n }, () => `<div class="card skel ${cls}"><div class="art"></div><div class="body"><div class="ln h"></div><div class="ln"></div><div class="ln w60"></div><div class="ln w40"></div></div></div>`).join("");
   const ANN = { id: "announcements", name: "Announcements", icon: "pin", blurb: "News and house rules from the garage." };
@@ -339,9 +453,10 @@
     return `<article class="card guide reveal"><a class="stretch" href="${esc(url(g.href))}"><span class="sr-only">${esc(g.title)}</span></a><div class="body">${guideHead(opts.kind)}<h3>${esc(g.title)}</h3><p>${esc(g.summary || "")}</p><div class="tags">${tags}</div></div></article>`;
   }
   function guideCard(g, opts = {}) {
-    const href = url("learn.html?g=" + encodeURIComponent(g.number));
+    const href = g.native ? url("learn.html?p=" + encodeURIComponent(g.postId)) : url("learn.html?g=" + encodeURIComponent(g.number));
     const tags = (g.tags || g.labels || []).slice(0, 6).map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
-    return `<article class="card guide reveal"><a class="stretch" href="${href}"><span class="sr-only">${esc(g.title)}</span></a><div class="body">${guideHead(opts.kind)}<h3>${esc(g.title || "Guide")}</h3><p>${esc(g.excerpt || "")}</p><div class="tags">${tags}</div><div class="meta">${who(g.by || (g.author && g.author.login), g.avatar || (g.author && g.author.avatar), "xs")}<span>${ic("heart")} ${(g.reactions && g.reactions.total) || 0}</span></div></div></article>`;
+    const person = g.native ? whoNative(g.by, g.avatar, g.byId, "xs") : who(g.by || (g.author && g.author.login), g.avatar || (g.author && g.author.avatar), "xs");
+    return `<article class="card guide reveal"><a class="stretch" href="${href}"><span class="sr-only">${esc(g.title)}</span></a><div class="body">${guideHead(opts.kind)}<h3>${esc(g.title || "Guide")}</h3><p>${esc(g.excerpt || "")}</p><div class="tags">${tags}</div><div class="meta">${person}<span>${ic("heart")} ${(g.reactions && g.reactions.total) || 0}</span></div></div></article>`;
   }
   function memberRow(m, rank) {
     const href = url("profile.html?u=" + encodeURIComponent(m.login));
@@ -359,6 +474,61 @@
     setTimeout(() => { t.classList.add("out"); setTimeout(() => t.remove(), 350); }, 2600);
   }
   window.VG.toast = toast;
+
+  function userAvatar(user) {
+    if (!user) return "";
+    if (user.avatar) return user.avatar;
+    if (user.avatar_key) return "/img/" + encodeURIComponent(user.avatar_key);
+    return "";
+  }
+  function setAccountLink(me) {
+    const slot = $("#account-link");
+    if (!slot) return;
+    if (me) {
+      $("#account-signup")?.remove();
+      const name = me.display_name || "Account";
+      slot.className = "account-chip";
+      slot.href = url("account.html");
+      slot.title = name;
+      slot.innerHTML = `${av(name, "xs", userAvatar(me))}<span class="account-name">${esc(name)}</span>`;
+    } else {
+      slot.className = "btn ghost sm";
+      slot.href = url("account.html");
+      slot.title = "Sign in";
+      slot.textContent = "Sign in";
+      if (!$("#account-signup")) {
+        const signup = document.createElement("a");
+        signup.id = "account-signup";
+        signup.className = "btn ghost sm";
+        signup.href = url("account.html?mode=signup");
+        signup.textContent = "Sign up";
+        slot.after(signup);
+      }
+    }
+  }
+  function loadAccountLink() {
+    if (!hasNative) return Promise.resolve(null);
+    return VGN.me().then((me) => { setAccountLink(me); return me; }).catch(() => null);
+  }
+  function ownerPanel(editHref) {
+    return `<div class="panel"><h3>${ic("user")} Owner</h3><p class="muted" style="margin-top:0">Only you can see these controls.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn sm" href="${esc(editHref)}">Edit</a><button type="button" class="btn ghost sm" data-owner-delete>Delete</button></div></div>`;
+  }
+  function bindOwnerDelete(root, postId, redirect = "projects.html") {
+    const btn = $("[data-owner-delete]", root);
+    if (!btn || !postId || !window.VGN) return;
+    btn.addEventListener("click", async () => {
+      if (!confirm("Delete this post? This cannot be undone.")) return;
+      btn.disabled = true;
+      try {
+        await VGN.deletePost(postId);
+        try { sessionStorage.setItem("vg-toast", "Post deleted"); } catch (e) { /* storage can be blocked */ }
+        location.href = url(redirect);
+      } catch (err) {
+        btn.disabled = false;
+        toast(err.message || "Could not delete this post.", "warn");
+      }
+    });
+  }
 
   let io = null;
   function reveal(root = document) {
@@ -416,12 +586,12 @@
     return corpusP;
   }
   async function buildCorpus() {
-    const [proj, discj, guides, challenges, members] = await Promise.all([projJSON(), disc(), guidesJSON(), challengesJSON(), membersJSON()]);
+    const [projects, discj, guides, challenges, members] = await Promise.all([api.projects(), disc(), guidesJSON(), challengesJSON(), membersJSON()]);
     const items = [];
-    for (const p of proj.projects || []) items.push({ type: "Project", title: p.name || "Untitled project", text: [p.pitch, p.by, ...(p.tools || []), ...(p.tags || []), p.id].filter(Boolean).join(" "), href: url("project.html?id=" + encodeURIComponent(p.id)), meta: "@" + (p.by || "ghost"), when: p.updatedAt || p.createdAt || "" });
+    for (const p of projects) items.push({ type: "Project", title: p.name || "Untitled project", text: [p.pitch, p.by, ...(p.tools || []), ...(p.tags || []), p.id].filter(Boolean).join(" "), href: url("project.html?id=" + encodeURIComponent(p.id)), meta: (p.native ? "" : "@") + (p.by || "ghost"), native: p.native, author: p.by, avatar: p.avatar, byId: p.byId, when: p.updatedAt || p.createdAt || "" });
     for (const t of discj.threads || []) items.push({ type: "Thread", title: t.title || "Untitled thread", text: [t.by, t.category, t.channel, t.id].filter(Boolean).join(" "), href: url("thread.html?id=" + encodeURIComponent(t.id)), meta: "@" + (t.by || "ghost"), when: t.updatedAt || t.createdAt || "" });
     for (const g of siteGuides()) items.push({ type: "Guide", title: g.title, text: [g.keywords, g.summary, ...(g.tags || [])].filter(Boolean).join(" "), href: url(g.href), meta: "Vibe Garage", when: g.published || "" });
-    for (const g of guides.guides || []) items.push({ type: "Guide", title: g.title || "Untitled guide", text: [g.excerpt, g.by, g.author && g.author.login, ...(g.tags || [])].filter(Boolean).join(" "), href: url("learn.html?g=" + encodeURIComponent(g.number)), meta: "@" + (g.by || (g.author && g.author.login) || "ghost"), when: g.updatedAt || g.createdAt || "" });
+    for (const g of guides.guides || []) items.push({ type: "Guide", title: g.title || "Untitled guide", text: [g.excerpt, g.by, g.author && g.author.login, ...(g.tags || [])].filter(Boolean).join(" "), href: g.native ? url("learn.html?p=" + encodeURIComponent(g.postId)) : url("learn.html?g=" + encodeURIComponent(g.number)), meta: (g.native ? "" : "@") + (g.by || (g.author && g.author.login) || "ghost"), native: g.native, author: g.by, avatar: g.avatar, byId: g.byId, when: g.updatedAt || g.createdAt || "" });
     for (const c of challenges.challenges || []) items.push({ type: "Challenge", title: c.title || "Untitled challenge", text: [c.excerpt, c.by, c.status, ...(c.tags || [])].filter(Boolean).join(" "), href: url("challenges.html") + "#challenge-" + encodeURIComponent(c.number), meta: "@" + (c.by || (c.author && c.author.login) || "ghost"), when: c.updatedAt || c.createdAt || "" });
     for (const m of members.members || []) items.push({ type: "Builder", title: "@" + m.login, text: m.login, href: url("profile.html?u=" + encodeURIComponent(m.login)), meta: (m.score || 0) + " score", when: m.lastSeen || "" });
     return items;
@@ -469,7 +639,7 @@
       input.removeAttribute("aria-activedescendant");
       return;
     }
-    list.innerHTML = hits.map((hit, i) => `<li id="sopt-${i}" role="option" aria-selected="${i === 0 ? "true" : "false"}"><button type="button" data-href="${esc(hit.href)}"><span class="k">${esc(hit.type)}</span><strong>${esc(hit.title)}</strong><small>${esc(hit.meta || "")}</small></button></li>`).join("");
+    list.innerHTML = hits.map((hit, i) => `<li id="sopt-${i}" role="option" aria-selected="${i === 0 ? "true" : "false"}"><button type="button" data-href="${esc(hit.href)}"><span class="k">${esc(hit.type)}</span><strong>${esc(hit.title)}</strong><small>${hit.native ? whoNative(hit.author, hit.avatar, hit.byId, "", false) : esc(hit.meta || "")}</small></button></li>`).join("");
     input.setAttribute("aria-activedescendant", "sopt-0");
   }
   function moveSearch(dir) {
@@ -523,6 +693,7 @@
     sendGiscusTheme();
   }
   function mountAnalytics() {
+    if (["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname)) return;
     const cf = String((C.analytics && C.analytics.cfBeacon) || "").trim();
     if (/^[a-f0-9]{32}$/.test(cf) && !document.querySelector("script[data-cf-beacon]")) {
       const b = document.createElement("script");
@@ -774,6 +945,16 @@
       const all = await api.projects();
       const code = p.code || "";
       const author = p.by || "ghost";
+      const native = Boolean(p.native);
+      let ownerMe = null;
+      if (native && window.VGN) {
+        try { ownerMe = await VGN.me(); } catch (e) { ownerMe = null; }
+      }
+      const isOwner = Boolean(native && ownerMe && ownerMe.id === p.byId);
+      const feedbackBlock = native ? "" : `<div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>`;
+      const hero = native && p.image
+        ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`
+        : art(p);
       injectLd({
         "@context": "https://schema.org",
         "@type": ["SoftwareApplication", "CreativeWork"],
@@ -783,23 +964,25 @@
         applicationCategory: "WebApplication",
         ...(p.createdAt ? { datePublished: p.createdAt } : {}),
         ...(p.updatedAt ? { dateModified: p.updatedAt } : {}),
-        author: { "@type": "Person", name: author, url: pageUrl("profile.html?u=" + encodeURIComponent(author)) },
+        author: { "@type": "Person", name: author, url: pageUrl(native ? "profile.html?n=" + encodeURIComponent(p.byId) : "profile.html?u=" + encodeURIComponent(author)) },
         ...(repo ? { codeRepository: repo } : {}),
         ...(live ? { sameAs: live } : {})
       });
       root.innerHTML = `<div class="page-head" style="padding-top:30px"><a class="kicker" href="${url("projects.html")}">${ic("arrow-left")} all projects</a><h1 style="margin-top:.3em">${esc(p.name)}</h1><p>${esc(p.pitch || "")}</p><div class="tags">${(p.tools || []).map(toolTag).join("")}${(p.tags || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div></div>
-<div class="detail"><div><div class="hero-art reveal">${art(p)}</div>
+<div class="detail"><div><div class="hero-art reveal">${hero}</div>
 <div class="panel reveal" style="margin-top:22px"><h3>${ic("code")} The code</h3><p class="muted" style="margin-top:0">${repo ? `${ic("git-branch")} <a class="mono" href="${esc(repo)}" target="_blank" rel="noopener noreferrer">${esc(repo.replace(/^https:\/\/github.com\//, "github.com/"))}</a>` : "No repo linked."}</p>${code ? `<div style="position:relative"><pre class="code">${esc(code)}</pre><button type="button" class="btn ghost sm copy" data-copy>${ic("code")} Copy</button></div>` : `<p class="muted">No code pasted.</p>`}</div>
 <div class="panel reveal"><h3>${ic("wand-sparkles")} Prompts they shared</h3><p class="muted" style="margin-top:0">The secret sauce. Steal freely.</p>${(p.prompts || []).map((x) => `<div class="prompt">${ic("terminal")}${esc(x)}</div>`).join("") || `<p class="muted">No prompts shared.</p>`}</div>
 <div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, p.name)}</div></div>
-<aside><div class="panel glass"><div class="fbbig ${esc(p.fb || "gentle")}"><span class="em">${f[1]}</span><div><b>Feedback wanted: ${f[0]}</b><br><small class="muted">${f[2]}</small></div></div>
+<aside><div class="panel glass">${feedbackBlock}
 ${live ? `<p style="margin:18px 0 6px"><a class="btn" style="width:100%" href="${esc(live)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open it live</a></p>` : ""}</div>
-${reactionBlock(p.reactions, p.discussionUrl)}
-<div class="panel"><h3>${ic("user")} Builder</h3><div style="display:flex;gap:12px;align-items:center">${who(author, p.avatar)}</div></div></aside></div>
-${p.number ? giscus(p.number) : ""}
+${native ? "" : reactionBlock(p.reactions, p.discussionUrl)}
+<div class="panel"><h3>${ic("user")} Builder</h3><div style="display:flex;gap:12px;align-items:center">${native ? whoNative(author, p.avatar, p.byId) : who(author, p.avatar)}</div></div>
+${isOwner ? ownerPanel(url("submit.html?edit=" + encodeURIComponent(p.postId))) : ""}</aside></div>
+${native ? "" : (p.number ? giscus(p.number) : "")}
 <section><div class="sec-h"><h2>More from the garage</h2></div><div class="grid3">${all.filter((o) => o.id !== p.id).slice(0, 3).map((o) => card(o)).join("") || `<p class="muted">Nothing else yet. <a href="${url("submit.html")}">Share yours</a>.</p>`}</div></section>`;
-      if (p.number) mountGiscus(p.number);
+      if (!native && p.number) mountGiscus(p.number);
       bindShare(root);
+      bindOwnerDelete(root, p.postId);
       $("[data-copy]", root)?.addEventListener("click", () => { navigator.clipboard?.writeText(code).then(() => toast("Code copied"), () => toast("Copy not allowed here", "warn")); });
       reveal();
     },
@@ -908,9 +1091,39 @@ ${giscus(t.number)}`;
       const fg = $("#featured-guides");
       if (fg && siteGuides().length) fg.innerHTML = siteGuides().map((sg) => siteGuideCard(sg)).join("");
       const [data, slug] = await Promise.all([guidesJSON(), api.categorySlug("prompt-craft")]);
-      const write = api.newDiscussionUrl(slug, "[Guide] ", "What this guide covers:\n\n");
-      $$("[data-guide]").forEach((a) => { a.href = write; });
+      const write = nativePosts ? url("submit.html?kind=guide") : api.newDiscussionUrl(slug, "[Guide] ", "What this guide covers:\n\n");
+      const writeAttrs = nativePosts ? "" : ' target="_blank" rel="noopener noreferrer"';
+      $$("[data-guide]").forEach((a) => {
+        a.href = write;
+        if (nativePosts) { a.removeAttribute("target"); a.removeAttribute("rel"); }
+      });
       const guides = data.guides || [];
+      const pid = qs("p");
+      if (pid) {
+        const guide = guides.find((row) => row.native && (String(row.postId) === String(pid) || row.id === "vg-" + pid));
+        const host = root || g;
+        if (!host) return;
+        if (!guide) {
+          setSeo({ title: "Guide not found · Vibe Garage", description: "That guide is not in the latest Vibe Garage snapshot.", path: "learn.html" });
+          host.innerHTML = empty("Guide not found", "It may have been renamed, or it is not in this snapshot yet.", `<a class="btn sm" href="${url("learn.html")}">${ic("arrow-left")} All guides</a>`);
+          return;
+        }
+        const canon = setSeo({ title: (guide.title || "Guide") + " · Vibe Garage", description: guide.excerpt || guide.title, path: "learn.html?p=" + encodeURIComponent(guide.postId) });
+        const tags = (guide.tags || guide.labels || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
+        let ownerMe = null;
+        if (window.VGN) {
+          try { ownerMe = await VGN.me(); } catch (e) { ownerMe = null; }
+        }
+        const isOwner = Boolean(ownerMe && ownerMe.id === guide.byId);
+        const live = httpUrl(guide.link);
+        const cover = guide.image ? `<div class="hero-art reveal" style="margin-bottom:22px"><img src="${esc(guide.image)}" alt="${esc(guide.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>` : "";
+        const linkButton = live ? `<p style="margin:18px 0 0"><a class="btn sm" href="${esc(live)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the link</a></p>` : "";
+        host.innerHTML = `<div class="page-head"><a class="kicker" href="${url("learn.html")}">${ic("arrow-left")} all guides</a><h1 style="margin-top:.35em">${esc(guide.title || "Guide")}</h1><p>${whoNative(guide.by, guide.avatar, guide.byId)} · ${esc(day(guide.createdAt) || "")}</p><div class="tags">${tags}</div></div>${cover}<article class="post op reveal"><div class="gh-body">${sanitize(guide.bodyHTML || "")}</div>${linkButton}</article><div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, guide.title || "Guide")}</div>${isOwner ? ownerPanel(url("submit.html?kind=guide&edit=" + encodeURIComponent(guide.postId))) : ""}<p><a class="btn ghost sm" data-guide${writeAttrs} href="${esc(write)}">${ic("book-open")} Write a guide</a></p>`;
+        bindShare(host);
+        bindOwnerDelete(host, guide.postId, "learn.html");
+        reveal(host);
+        return;
+      }
       const num = qs("g");
       if (num) {
         const guide = guides.find((row) => String(row.number) === String(num) || row.id === "gh-" + num);
@@ -924,7 +1137,7 @@ ${giscus(t.number)}`;
         const author = guide.by || (guide.author && guide.author.login) || "ghost";
         const canon = setSeo({ title: (guide.title || "Guide") + " · Vibe Garage", description: guide.excerpt || guide.title, path: "learn.html?g=" + encodeURIComponent(guide.number) });
         const tags = (guide.tags || guide.labels || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
-        host.innerHTML = `<div class="page-head"><a class="kicker" href="${url("learn.html")}">${ic("arrow-left")} all guides</a><h1 style="margin-top:.35em">${esc(guide.title || "Guide")}</h1><p>${who(author, guide.avatar || (guide.author && guide.author.avatar))} · ${esc(day(guide.createdAt) || "")}</p><div class="tags">${tags}</div></div><article class="post op reveal"><div class="gh-body">${guide.bodyHTML ? sanitize(guide.bodyHTML) : "<p class=\"muted\">This guide has no body text.</p>"}</div></article><div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, guide.title || "Guide")}</div>${reactionBlock(guide.reactions, guide.discussionUrl || guide.url)}<p><a class="btn ghost sm" data-guide target="_blank" rel="noopener noreferrer" href="${esc(write)}">${ic("book-open")} Write a guide</a></p>`;
+        host.innerHTML = `<div class="page-head"><a class="kicker" href="${url("learn.html")}">${ic("arrow-left")} all guides</a><h1 style="margin-top:.35em">${esc(guide.title || "Guide")}</h1><p>${who(author, guide.avatar || (guide.author && guide.author.avatar))} · ${esc(day(guide.createdAt) || "")}</p><div class="tags">${tags}</div></div><article class="post op reveal"><div class="gh-body">${guide.bodyHTML ? sanitize(guide.bodyHTML) : "<p class=\"muted\">This guide has no body text.</p>"}</div></article><div class="panel reveal"><h3>${ic("share")} Share</h3>${shareBar(canon, guide.title || "Guide")}</div>${reactionBlock(guide.reactions, guide.discussionUrl || guide.url)}<p><a class="btn ghost sm" data-guide${writeAttrs} href="${esc(write)}">${ic("book-open")} Write a guide</a></p>`;
         bindShare(host);
         reveal(host);
         return;
@@ -932,7 +1145,7 @@ ${giscus(t.number)}`;
       if (!g) return;
       if (!guides.length) {
         g.style.display = "block";
-        g.innerHTML = empty("No community guides yet", "Figured something out the hard way? Write it up and it can become the first community guide in the library.", `<a class="btn sm" data-guide target="_blank" rel="noopener noreferrer" href="${esc(write)}">${ic("book-open")} Write a guide</a>`);
+        g.innerHTML = empty("No community guides yet", "Figured something out the hard way? Write it up and it can become the first community guide in the library.", `<a class="btn sm" data-guide${writeAttrs} href="${esc(write)}">${ic("book-open")} Write a guide</a>`);
         reveal(g);
         return;
       }
@@ -945,6 +1158,31 @@ ${giscus(t.number)}`;
       const [memData, projects, threads] = await Promise.all([membersJSON(), api.projects(), api.threads()]);
       const members = memData.members || [];
       const root = $("#profile-root");
+      const nativeId = (qs("n") || "").trim();
+      if (nativeId) {
+        if (!root) return;
+        let payload = null;
+        try {
+          const response = await fetch(url("api/users/" + encodeURIComponent(nativeId)), { cache: "no-store" });
+          if (response.ok) payload = await response.json();
+        } catch (e) {
+          payload = null;
+        }
+        if (!payload || !payload.user) {
+          setSeo({ title: "Builder not found · Vibe Garage", description: "That builder is not in Vibe Garage.", path: "profile.html" });
+          root.innerHTML = empty("Builder not found", "That profile link might be old, or the account no longer exists.", `<a class="btn sm" href="${url("profile.html")}">${ic("arrow-left")} All builders</a>`);
+          return;
+        }
+        const user = payload.user;
+        const name = user.display_name || "Builder";
+        const avatar = user.avatar || "";
+        const items = (payload.posts || []).map((post) => post.kind === "guide" ? guideCard(normalizeNativeGuide(post)) : card(normalizeNativeProject(post)));
+        const joined = user.created_at ? day(new Date(user.created_at * 1000).toISOString()) : "";
+        setSeo({ title: name + " · Vibe Garage", description: name + " on Vibe Garage. " + items.length + " post" + (items.length === 1 ? "" : "s") + ".", path: "profile.html?n=" + encodeURIComponent(user.id) });
+        root.innerHTML = `<div class="page-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="${url("profile.html")}">${ic("arrow-left")} all builders</a><div class="prof"><div class="av lg">${avatar ? `<img src="${esc(avatar)}" alt="" style="width:100%;height:100%;object-fit:cover">` : esc(name[0].toUpperCase())}</div><div><h1>${esc(name)}</h1><p>${esc(user.bio || "No bio yet.")}</p><div class="pstats"><div><b>${items.length}</b><small>posts</small></div></div><p class="muted">${joined ? "Joined " + esc(joined) : ""}</p></div></div></div><section><div class="sec-h"><h2>Posts</h2></div><div class="grid3">${items.length ? items.join("") : `<p class="muted">No posts from ${esc(name)} yet.</p>`}</div></section>`;
+        reveal(root);
+        return;
+      }
       if (login) {
         if (!root) return;
         const m = members.find((row) => String(row.login).toLowerCase() === login.toLowerCase());
@@ -968,11 +1206,131 @@ ${giscus(t.number)}`;
       const draw = () => {
         const q = (input && input.value || "").trim().toLowerCase();
         const list = members.filter((m) => !q || String(m.login).toLowerCase().includes(q)).slice().sort((a, b) => (b.score || 0) - (a.score || 0) || String(a.login).localeCompare(String(b.login)));
-        box.innerHTML = list.length ? `<ol class="board">${list.map((m, i) => memberRow(m, i + 1)).join("")}</ol>` : members.length ? empty("No builders match", "Try a different name.", "") : empty("No builders yet", "Be the first to post a project or a thread. Your GitHub account becomes your profile.", `<a class="btn sm" href="${url("submit.html")}">${ic("rocket")} Submit a project</a>`);
+        box.innerHTML = list.length ? `<ol class="board">${list.map((m, i) => memberRow(m, i + 1)).join("")}</ol>` : members.length ? empty("No builders match", "Try a different name.", "") : empty("No builders yet", "Be the first to post a project or a guide. Your Vibe Garage account becomes your profile.", `<a class="btn sm" href="${url("submit.html")}">${ic("rocket")} Submit a project</a>`);
         reveal(box);
       };
       input?.addEventListener("input", draw);
       draw();
+    },
+    async account() {
+      const root = $("#account-root");
+      if (!root) return;
+      if (!window.VGN) {
+        root.innerHTML = `<div class="page-head"><span class="kicker">your garage id</span><h1>Your account</h1><p>The account tools are still loading. Try again in a moment.</p></div>`;
+        return;
+      }
+
+      const me = await VGN.me().catch(() => null);
+      if (!me) {
+        root.innerHTML = `<div class="page-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="kicker">your garage id</span><h1>Your account</h1><p>Sign in or create a free Vibe Garage account to publish projects and guides under your display name.</p></div><div id="account-auth"></div>`;
+        const host = $("#account-auth");
+        VGN.authPanel(host, {
+          mode: qs("mode") === "signup" ? "signup" : "signin",
+          onDone: (user) => {
+            setAccountLink(user);
+            pages.account();
+          }
+        });
+        return;
+      }
+
+      let posts = [];
+      try { posts = await VGN.listPosts({ user: me.id }); } catch (e) { posts = []; }
+      const name = me.display_name || "Builder";
+      const avatar = userAvatar(me);
+      const rows = posts.map((post) => {
+        const edit = post.kind === "guide"
+          ? url("submit.html?kind=guide&edit=" + encodeURIComponent(post.id))
+          : url("submit.html?edit=" + encodeURIComponent(post.id));
+        const view = post.kind === "guide"
+          ? url("learn.html?p=" + encodeURIComponent(post.id))
+          : url("project.html?id=vg-" + encodeURIComponent(post.id));
+        return `<li class="account-post" data-post-id="${esc(post.id)}"><div><a href="${view}">${esc(post.title)}</a><small class="muted">${post.kind === "guide" ? "Guide" : "Project"}</small></div><div style="display:flex;gap:8px"><a class="btn ghost sm" href="${edit}">Edit</a><button type="button" class="btn ghost sm" data-account-delete="${esc(post.id)}">Delete</button></div></li>`;
+      }).join("");
+
+      root.innerHTML = `<div class="page-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="kicker">your garage id</span><h1>${esc(name)}</h1><p>Signed in as <b>${esc(name)}</b>.</p></div>
+<div class="grid2">
+<div class="panel"><h3>${ic("user")} Profile</h3><form id="account-profile" novalidate><div class="field"><label for="acc-name">Display name</label><div class="inp"><input id="acc-name" type="text" maxlength="40" value="${esc(name)}"></div></div><div class="field"><label for="acc-bio">Bio <small>optional</small></label><textarea id="acc-bio" maxlength="280" rows="4">${esc(me.bio || "")}</textarea></div><p class="hint err" id="account-error" role="alert" style="min-height:1.2em;margin:0 0 10px"></p><button type="submit" class="btn" id="account-save">Save changes</button></form></div>
+<div class="panel"><h3>${ic("user")} Avatar</h3><div style="display:flex;gap:14px;align-items:center;margin:4px 0 16px">${av(name, "lg", avatar)}</div><div class="field"><label for="acc-avatar-file">Upload a new avatar</label><input type="file" id="acc-avatar-file" accept="image/*"><div class="hint" id="account-avatar-hint" data-def=""></div></div></div>
+</div>
+<div class="panel"><h3>${ic("book-open")} Your posts</h3>${posts.length ? `<ul class="account-posts">${rows}</ul>` : `<p class="muted">You have not published anything yet. <a href="${url("submit.html")}">Share a project</a>.</p>`}</div>
+<p style="margin-top:20px"><button type="button" class="btn ghost" id="account-signout">Sign out</button></p>`;
+
+      const profile = $("#account-profile");
+      profile?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const errorBox = $("#account-error");
+        const save = $("#account-save");
+        const displayName = $("#acc-name").value.trim();
+        const bio = $("#acc-bio").value.trim();
+        if (displayName.length < 2 || displayName.length > 40) {
+          if (errorBox) errorBox.textContent = "Display name must be 2 to 40 characters.";
+          return;
+        }
+        if (errorBox) errorBox.textContent = "";
+        if (save) save.disabled = true;
+        try {
+          const user = await VGN.updateMe({ display_name: displayName, bio });
+          setAccountLink(user);
+          toast("Profile saved");
+          await pages.account();
+        } catch (err) {
+          if (errorBox) errorBox.textContent = err.message || "Could not save your profile.";
+          toast(err.message || "Could not save your profile.", "warn");
+          if (save) save.disabled = false;
+        }
+      });
+
+      $("#acc-avatar-file")?.addEventListener("change", async (event) => {
+        const input = event.target;
+        const hint = $("#account-avatar-hint");
+        const file = input.files && input.files[0];
+        if (!file) return;
+        input.disabled = true;
+        if (hint) hint.textContent = "Uploading…";
+        try {
+          const blob = await VGN.resizeImage(file, 512);
+          const user = await VGN.uploadAvatar(blob);
+          setAccountLink(user);
+          toast("Avatar updated");
+          await pages.account();
+        } catch (err) {
+          if (hint) hint.textContent = err.message || "Could not upload that image.";
+          toast(err.message || "Could not upload that image.", "warn");
+          input.disabled = false;
+        }
+      });
+
+      $$("[data-account-delete]", root).forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (!confirm("Delete this post? This cannot be undone.")) return;
+          btn.disabled = true;
+          try {
+            await VGN.deletePost(btn.dataset.accountDelete);
+            toast("Post deleted");
+            await pages.account();
+          } catch (err) {
+            btn.disabled = false;
+            toast(err.message || "Could not delete this post.", "warn");
+          }
+        });
+      });
+
+      $("#account-signout")?.addEventListener("click", async (event) => {
+        const btn = event.currentTarget;
+        btn.disabled = true;
+        try {
+          await VGN.logout();
+          setAccountLink(null);
+          toast("Signed out");
+          await pages.account();
+        } catch (err) {
+          btn.disabled = false;
+          toast(err.message || "Could not sign out.", "warn");
+        }
+      });
+
+      reveal(root);
     },
     async leaderboard() {
       const box = $("#board");
@@ -987,14 +1345,193 @@ ${giscus(t.number)}`;
       box.innerHTML = note + list;
       reveal(box);
     },
-    submit() { if ($("#wizard")) wizard(); }
+    async submit() {
+      const editId = qs("edit");
+      if (nativePosts && editId) {
+        if (!window.VGN) { editError("The publishing tools are still loading. Try again in a moment."); return; }
+        let editPost = null;
+        let me = null;
+        try { editPost = await VGN.getPost(editId); } catch (err) { editPost = null; }
+        if (!editPost) { editError("We could not find that post. It may have been deleted."); return; }
+        try { me = await VGN.me(); } catch (err) { me = null; }
+        if (!me) { editError("Sign in as the author to edit this post."); return; }
+        if (me.id !== editPost.author.id) { editError("You can only edit your own posts."); return; }
+        if (editPost.kind === "guide") guideForm(editPost);
+        else wizard(editPost);
+        return;
+      }
+      if (nativePosts && qs("kind") === "guide") { guideForm(); return; }
+      if ($("#wizard")) wizard();
+    }
   };
 
   const PATTERNS = [[/sk-(?:proj-|ant-)?[A-Za-z0-9_\-]{16,}/g, "OpenAI/Anthropic-style key (sk-…)"], [/xai-[A-Za-z0-9]{20,}/g, "xAI-style key (xai-…)"], [/gh[pousr]_[A-Za-z0-9]{20,}/g, "GitHub token (ghp_…)"], [/github_pat_[A-Za-z0-9_]{20,}/g, "GitHub fine-grained token"], [/AKIA[0-9A-Z]{16}/g, "AWS access key ID (AKIA…)"], [/AIza[0-9A-Za-z_\-]{30,}/g, "Google API key (AIza…)"], [/xox[abpr]-[A-Za-z0-9\-]{10,}/g, "Slack token (xox…)"], [/-----BEGIN [A-Z ]*PRIVATE KEY-----/g, "Private key block"], [/\b(?:password|passwd|pwd|secret|api[_-]?key|token)\s*[:=]\s*["']?[^\s"']{4,}/gi, "Hard-coded password/secret"]];
   function scanSecrets(fields) { const hits = []; for (const [label, v] of Object.entries(fields)) for (const [re, name] of PATTERNS) { re.lastIndex = 0; let m; while ((m = re.exec(v || ""))) { const s = m[0]; hits.push(`${label}: ${name} → ${s.slice(0, 6)}${"•".repeat(Math.min(10, Math.max(3, s.length - 6)))}`); } } return hits; }
   window.VG.scanSecrets = scanSecrets;
+  function editError(message) {
+    const main = $("#main");
+    if (!main) return;
+    main.innerHTML = `<div class="wrap narrow"><div class="alert warn show"><div><b>Can’t edit this post.</b> ${esc(message)}</div></div><p><a class="btn sm" href="${url("projects.html")}">${ic("arrow-left")} Back to projects</a></p></div>`;
+  }
   function challengeNumber() { const raw = String(qs("challenge") || "").replace(/^#/, "").trim(); return /^\d+$/.test(raw) ? raw : ""; }
-  function wizard() {
+  function guideForm(editPost = null) {
+    const form = $("#guide-form");
+    if (!form) return;
+
+    const wiz = $("#wizard");
+    if (wiz) wiz.style.display = "none";
+    $$(".progress, .steps").forEach((el) => { el.style.display = "none"; });
+    const head = $(".page-head");
+    if (head) {
+      const heading = $("h1", head);
+      if (heading) heading.innerHTML = `Write a <span class="grad-text">guide</span>`;
+      const intro = $("p", head);
+      if (intro) intro.textContent = "Teach one small thing you figured out. Markdown is welcome, and the garage learns from your notes.";
+    }
+    form.hidden = false;
+    setSeo({
+      title: "Write a guide · Vibe Garage",
+      description: "Write a Vibe Garage guide and publish it under your account display name.",
+      path: "submit.html?kind=guide"
+    });
+
+    const title = $("#gtitle");
+    const body = $("#gbody");
+    const link = $("#glink");
+    const tagsInput = $("#gtags");
+    const coverInput = $("#gcover");
+    const coverName = $("#gcovername");
+    const count = $("#gbodycount");
+    const publishButton = $("#guidePublish");
+    const alertBox = $("#guideAlert");
+    const alertBody = $("#guideAlertBody");
+    let coverFile = null;
+    let busy = false;
+    const editing = editPost ? editPost.id : "";
+
+    if (editing && publishButton) publishButton.textContent = "Save changes";
+
+    const updateCount = () => { if (count) count.textContent = `${body.value.length}/50000`; };
+    body.addEventListener("input", updateCount);
+    if (editPost) {
+      title.value = editPost.title || "";
+      body.value = editPost.body_md || "";
+      link.value = editPost.link || "";
+      tagsInput.value = (editPost.tags || []).join(", ");
+    }
+    updateCount();
+
+    coverInput?.addEventListener("change", () => {
+      const picked = (coverInput.files && coverInput.files[0]) || null;
+      if (picked && !isAllowedImage(picked)) {
+        coverFile = null;
+        coverInput.value = "";
+        if (coverName) { coverName.textContent = IMAGE_TYPE_ERROR; coverName.classList.add("err"); }
+        toast(IMAGE_TYPE_ERROR, "warn");
+        return;
+      }
+      coverFile = picked;
+      if (coverName) { coverName.classList.remove("err"); coverName.textContent = coverFile ? "✔ " + coverFile.name : ""; }
+    });
+
+    const showError = (message) => {
+      if (alertBody) alertBody.innerHTML = esc(message);
+      if (alertBox) alertBox.classList.add("show");
+      toast(message, "warn");
+    };
+    const showSecret = (hits) => {
+      if (alertBody) alertBody.innerHTML = `<b>Hold up! This looks like a secret.</b> We found something that could be a key or password. Remove it before publishing:<ul>${hits.map((hit) => `<li>${esc(hit)}</li>`).join("")}</ul>`;
+      if (alertBox) alertBox.classList.add("show");
+      toast("Possible secret found. Not published", "warn");
+    };
+
+    async function publish() {
+      if (busy) return;
+      if (!window.VGN) { showError("The publishing tools are still loading. Try again in a moment."); return; }
+
+      const guideTitle = title.value.trim();
+      const guideBody = body.value;
+      const guideLink = link.value.trim();
+      const rawTags = tagsInput.value;
+
+      if (guideTitle.length < 3 || guideTitle.length > 120) {
+        showError("Give your guide a title (3 to 120 characters).");
+        title.focus();
+        return;
+      }
+      if (guideBody.trim().length < 20) {
+        showError("Write at least 20 characters of guide body.");
+        body.focus();
+        return;
+      }
+      if (guideLink && !/^https:\/\/\S+$/.test(guideLink)) {
+        showError("Link must start with https://.");
+        link.focus();
+        return;
+      }
+
+      const hits = scanSecrets({ Title: guideTitle, "Guide body": guideBody, Link: guideLink });
+      if (hits.length) { showSecret(hits); return; }
+      alertBox?.classList.remove("show");
+
+      busy = true;
+      if (publishButton) publishButton.disabled = true;
+      try {
+        let user = null;
+        try {
+          user = await VGN.me();
+        } catch (err) {
+          showError(err.message || "Could not check your account.");
+          return;
+        }
+
+        if (!user) {
+          const host = $("#guide-auth");
+          host.innerHTML = "";
+          VGN.authPanel(host, { onDone: () => { host.innerHTML = ""; publish(); } });
+          host.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+          return;
+        }
+        $("#guide-auth")?.replaceChildren();
+
+        if (coverFile && !isAllowedImage(coverFile)) {
+          showError(IMAGE_TYPE_ERROR);
+          return;
+        }
+
+        let image_key;
+        if (coverFile && isAllowedImage(coverFile)) {
+          const blob = await VGN.resizeImage(coverFile);
+          const uploaded = await VGN.uploadImage(blob);
+          image_key = uploaded.key;
+        }
+
+        const tags = rawTags.split(",").map((tag) => tag.trim().replace(/^#/, "")).filter(Boolean).slice(0, 12);
+        const payload = {
+          kind: "guide",
+          title: guideTitle,
+          body_md: guideBody,
+          link: guideLink,
+          prompts: [],
+          tools: [],
+          tags,
+          image_key,
+        };
+        const post = editing ? await VGN.updatePost(editing, payload) : await VGN.createPost(payload);
+
+        toast(editing ? "Saved!" : "Published!");
+        setTimeout(() => { location.href = url("learn.html?p=" + encodeURIComponent(post.id)); }, 900);
+      } catch (err) {
+        showError(err.message || "Could not publish. Try again.");
+      } finally {
+        busy = false;
+        if (publishButton) publishButton.disabled = false;
+      }
+    }
+
+    form.addEventListener("submit", (event) => { event.preventDefault(); publish(); });
+  }
+  function wizard(editPost = null) {
     const wiz = $("#wizard");
     if (!wiz) return;
     let step = 1;
@@ -1005,7 +1542,7 @@ ${giscus(t.number)}`;
     if (challengeNum) {
       const note = document.createElement("div");
       note.className = "alert ok show";
-      note.innerHTML = `<div><b>Entering challenge #${esc(challengeNum)}.</b> The GitHub post will include a <span class="mono">Challenge: #${esc(challengeNum)}</span> line and a challenge tag.</div>`;
+      note.innerHTML = `<div><b>Entering challenge #${esc(challengeNum)}.</b> Your published project will include a <span class="mono">Challenge: #${esc(challengeNum)}</span> line and a challenge tag.</div>`;
       wiz.prepend(note);
       setSeo({ title: "Enter challenge #" + challengeNum + " · Vibe Garage", description: "Submit a Vibe Garage project for challenge #" + challengeNum + ".", path: "submit.html?challenge=" + challengeNum });
     }
@@ -1013,13 +1550,42 @@ ${giscus(t.number)}`;
     $("#tags-opts").innerHTML = ["web app", "game", "bot", "ai", "music", "creative", "productivity", "learning", "fun", "mobile", "api", "hardware"].map((t) => `<label><input type="checkbox" name="tags" value="${t}"><span>#${t}</span></label>`).join("");
     const pitch = $("#ppitch");
     pitch.addEventListener("input", () => { $("#pitchcount").textContent = `${pitch.value.length}/120`; });
+    if (editPost) {
+      $("#pname").value = editPost.title || "";
+      pitch.value = editPost.pitch || "";
+      $("#pitchcount").textContent = `${pitch.value.length}/120`;
+      $("#plink").value = editPost.link || "";
+      $("#prepo").value = editPost.repo || "";
+      $("#pcode").value = editPost.code || "";
+      $("#pprompts").value = (editPost.prompts || []).join("\n");
+      $$("input[name=tools]").forEach((input) => { input.checked = (editPost.tools || []).includes(input.value); });
+      $$("input[name=tags]").forEach((input) => { input.checked = (editPost.tags || []).includes(input.value); });
+      const feedback = $(`input[name=fb][value="${editPost.feedback || "vibes"}"]`);
+      if (feedback) feedback.checked = true;
+    }
     const drop = $("#drop");
     const file = $("#pfile");
     drop.addEventListener("click", () => file.click());
     drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } });
     ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
     ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
-    const preview = (f) => { if (!f) return; $("#pfilename").textContent = "✔ " + f.name + " (preview only, stays on your device)"; const old = $("img", drop); if (old) old.remove(); if (f.type.startsWith("image/")) { const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im); } };
+    let selectedFile = null;
+    const preview = (f) => {
+      if (!f) return;
+      const old = $("img", drop); if (old) old.remove();
+      if (!isAllowedImage(f)) {
+        selectedFile = null;
+        file.value = "";
+        $("#pfilename").textContent = IMAGE_TYPE_ERROR;
+        $("#pfilename").classList.add("err");
+        toast(IMAGE_TYPE_ERROR, "warn");
+        return;
+      }
+      selectedFile = f;
+      $("#pfilename").classList.remove("err");
+      $("#pfilename").textContent = "✔ " + f.name + " (will be uploaded when you publish)";
+      const im = new Image(); im.src = URL.createObjectURL(f); im.alt = "preview"; drop.appendChild(im);
+    };
     drop.addEventListener("drop", (e) => preview(e.dataTransfer.files[0]));
     file.addEventListener("change", () => preview(file.files[0]));
     const val = () => ({ name: $("#pname").value.trim(), pitch: pitch.value.trim(), link: $("#plink").value.trim(), repo: $("#prepo").value.trim(), code: $("#pcode").value, prompts: $("#pprompts").value, tools: $$("input[name=tools]:checked").map((i) => i.value), tags: $$("input[name=tags]:checked").map((i) => i.value), fb: ($("input[name=fb]:checked") || {}).value || "vibes" });
@@ -1028,7 +1594,7 @@ ${giscus(t.number)}`;
       $$(".step-pill").forEach((p) => { const n = +p.dataset.pill; p.classList.toggle("on", n === step); p.classList.toggle("done", n < step); });
       $(".progress i").style.width = (step / max * 100) + "%";
       back.style.visibility = step > 1 ? "visible" : "hidden";
-      next.innerHTML = step < max ? `Next ${ic("arrow-right")}` : `${ic("rocket")} Publish`;
+      next.innerHTML = step < max ? `Next ${ic("arrow-right")}` : editPost ? `${ic("rocket")} Save changes` : `${ic("rocket")} Publish`;
       $("#secretAlert").classList.remove("show");
       $("#okAlert").classList.remove("show");
       if (step === 3) {
@@ -1050,7 +1616,100 @@ ${giscus(t.number)}`;
     });
     back.addEventListener("click", () => { if (step > 1) { step--; show(); } });
     show();
+
+    async function nativePublish(v) {
+      const alertBox = $("#okAlert");
+      const setAlert = (html, status = "ok") => {
+        alertBox.classList.toggle("ok", status === "ok");
+        alertBox.classList.toggle("warn", status !== "ok");
+        $("#okAlert div").innerHTML = html;
+        alertBox.classList.add("show");
+      };
+
+      if (!window.VGN) {
+        toast("The publishing tools are still loading. Try again in a moment.", "warn");
+        return;
+      }
+      if (nativePublish.busy) return;
+      nativePublish.busy = true;
+
+      try {
+        let user = null;
+        try {
+          user = await VGN.me();
+        } catch (err) {
+          setAlert(`<b>${esc(err.message || "Could not check your account.")}</b>`, "warn");
+          return;
+        }
+
+        if (!user) {
+          setAlert("<b>Looks clean!</b> Sign in or create an account to publish.");
+          let host = $("#native-auth");
+          if (!host) {
+            host = document.createElement("div");
+            host.id = "native-auth";
+            wiz.appendChild(host);
+          }
+          host.innerHTML = "";
+          VGN.authPanel(host, { onDone: () => { host.remove(); nativePublish(v); } });
+          host.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+          return;
+        }
+        $("#native-auth")?.remove();
+        setAlert(editPost ? "<b>Looks clean! Saving…</b>" : "<b>Looks clean! Publishing…</b>");
+
+        if (selectedFile && !isAllowedImage(selectedFile)) {
+          setAlert(`<b>${esc(IMAGE_TYPE_ERROR)}</b>`, "warn");
+          return;
+        }
+
+        let image_key;
+        if (selectedFile && isAllowedImage(selectedFile)) {
+          const blob = await VGN.resizeImage(selectedFile);
+          const uploaded = await VGN.uploadImage(blob);
+          image_key = uploaded.key;
+        }
+
+        const tags = v.tags.slice();
+        if (challengeNum && !tags.includes("challenge")) tags.push("challenge");
+        const prompts = v.prompts.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+        const bodyMd = challengeNum ? "Challenge: #" + challengeNum : (editPost ? editPost.body_md || "" : "");
+
+        const payload = {
+          kind: "project",
+          title: v.name,
+          body_md: bodyMd,
+          pitch: v.pitch,
+          link: v.link,
+          repo: v.repo,
+          code: v.code,
+          prompts,
+          tools: v.tools,
+          tags,
+          feedback: v.fb,
+          image_key,
+        };
+        const post = editPost ? await VGN.updatePost(editPost.id, payload) : await VGN.createPost(payload);
+
+        const target = url("project.html?id=vg-" + encodeURIComponent(post.id));
+        setAlert(editPost
+          ? `<b>Looks clean!</b> Saved! Your changes are live.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(target)}">${ic("external-link")} View your project</a></p>`
+          : `<b>Looks clean!</b> Published! Your project is live.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(target)}">${ic("external-link")} View your project</a></p>`);
+        toast(editPost ? "Saved!" : "Published!");
+        setTimeout(() => { location.href = target; }, 1200);
+      } catch (err) {
+        setAlert(`<b>${esc(err.message || "Could not publish. Try again.")}</b>`, "warn");
+        toast(err.message || "Could not publish. Try again.", "warn");
+      } finally {
+        nativePublish.busy = false;
+      }
+    }
+
     window.VG.onPublish = async (v) => {
+      if (nativePosts) {
+        await nativePublish(v);
+        return;
+      }
       const fbName = FB[v.fb][0];
       let code = v.code.trim();
       const limit = 3500;
@@ -1063,7 +1722,7 @@ ${giscus(t.number)}`;
       lines.push("### Pitch", v.pitch || "_No response_", "", "### Live link", v.link || "_No response_", "", "### Repo", v.repo || "_No response_", "", "### Tools", v.tools.join(", ") || "_No response_", "", "### Tags", tags.join(", ") || "_No response_", "", "### Feedback wanted", `${FB[v.fb][1]} ${fbName}`, "", "### Code", code ? "```\n" + code + "\n```" + (cut ? "\n_(trimmed, paste the rest below)_" : "") : "_No response_", "", "### Prompts", v.prompts.trim() ? v.prompts.trim().split(/\n+/).map((x) => "- " + x).join("\n") : "_No response_", "", "---", "_Posted from the Vibe Garage submit form. Add a screenshot by dragging it into this box!_");
       const body = lines.join("\n");
       const discuss = api.newDiscussionUrl(await api.categorySlug("projects"), "[Project] " + v.name, body);
-      $("#okAlert div").innerHTML = `<b>Looks clean! One last step on GitHub.</b> No secrets spotted. We opened a pre-filled post in a new tab. Sign in with GitHub, add your screenshot, and hit <b>Start discussion</b>. Your project shows up in the gallery shortly after.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(discuss)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the GitHub post</a></p>`;
+      $("#okAlert div").innerHTML = `<b>Looks clean! One last step on GitHub.</b> No secrets spotted. We opened a draft discussion in a new tab. Log in there, add your screenshot, and hit <b>Start discussion</b>. Your project shows up in the gallery shortly after.<p style="margin:12px 0 0"><a class="btn sm" href="${esc(discuss)}" target="_blank" rel="noopener noreferrer">${ic("external-link")} Open the GitHub post</a></p>`;
       $("#okAlert").classList.add("show");
       window.VG.lastSubmitUrl = discuss;
       const w = window.open(discuss, "_blank");
@@ -1075,6 +1734,14 @@ ${giscus(t.number)}`;
   document.addEventListener("DOMContentLoaded", () => {
     ensureChrome();
     globals();
+    loadAccountLink();
+    try {
+      const pendingToast = sessionStorage.getItem("vg-toast");
+      if (pendingToast) {
+        sessionStorage.removeItem("vg-toast");
+        toast(pendingToast);
+      }
+    } catch (e) { /* storage can be blocked */ }
     const fn = pages[document.body.dataset.page];
     Promise.resolve(fn ? fn() : reveal()).catch(() => {
       const main = $("#main");

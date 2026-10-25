@@ -1,0 +1,16 @@
+{
+  "name": "vibe-garage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "db:local": "wrangler d1 migrations apply vibe_garage --local",
+    "test": "vitest run",
+    "smoke": "python3 tests/smoke.py"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.23.0",
+    "vitest": "^4.1.0",
+    "wrangler": "^4"
+  }
+}
