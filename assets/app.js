@@ -690,7 +690,31 @@
     if (meta) meta.setAttribute("content", theme === "light" ? "#f4f7fb" : "#0a0f17");
     const btn = $("#theme-toggle");
     if (btn) btn.setAttribute("aria-label", theme === "light" ? "Switch to dark theme" : "Switch to light theme");
+    syncNavTheme();
     sendGiscusTheme();
+  }
+  // Phone menu copy of the theme toggle (the header toggle is hidden at 480px and below).
+  // Only text and hidden flags change, so the clicked node stays in the menu and the menu stays open.
+  function syncNavTheme() {
+    const item = $("#nav-theme-toggle");
+    if (!item) return;
+    const toLight = currentTheme() !== "light";
+    item.querySelector("[data-to-light]").toggleAttribute("hidden", !toLight);
+    item.querySelector("[data-to-dark]").toggleAttribute("hidden", toLight);
+    item.querySelector("span").textContent = toLight ? "Switch to light theme" : "Switch to dark theme";
+  }
+  function mountNavTheme() {
+    const nav = $("#site-nav");
+    if (!nav || $("#nav-theme-toggle")) return;
+    const item = document.createElement("button");
+    item.type = "button";
+    item.id = "nav-theme-toggle";
+    item.className = "nav-theme";
+    item.innerHTML = '<svg class="ico" data-to-light viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg><svg class="ico" data-to-dark viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg><span></span>';
+    const cta = nav.querySelector(".nav-cta");
+    nav.insertBefore(item, cta || null);
+    item.addEventListener("click", () => applyTheme(currentTheme() === "light" ? "dark" : "light", true));
+    syncNavTheme();
   }
   function mountAnalytics() {
     if (["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname)) return;
@@ -823,6 +847,7 @@
       }
     });
     $("#theme-toggle")?.addEventListener("click", () => applyTheme(currentTheme() === "light" ? "dark" : "light", true));
+    mountNavTheme();
     $$("[data-avatars]").forEach((el) => { el.innerHTML = (D.members || []).slice(0, +el.dataset.avatars || 6).map((m) => av(m.handle || m.login)).join(""); });
     if ($$("[data-stat]").length) {
       Promise.all([api.projects(), api.threads(), membersJSON()]).then(([ps, ts, mem]) => {
