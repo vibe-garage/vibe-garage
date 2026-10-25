@@ -99,7 +99,6 @@ describe("images", () => {
         prompts: [],
         tools: [],
         tags: ["game"],
-        feedback: "vibes",
         image_key: key,
       },
       other.ip
@@ -141,7 +140,6 @@ describe("images", () => {
         prompts: [],
         tools: [],
         tags: ["game"],
-        feedback: "vibes",
         image_key: key,
       },
       owner.ip

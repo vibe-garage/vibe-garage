@@ -143,7 +143,11 @@ def run(page, email):
     page.wait_for_selector('.wstep[data-step="3"].on', timeout=5000)
 
     page.locator('#tags-opts input[value="game"]').check(force=True)
-    page.locator('input[name="fb"][value="gentle"]').check(force=True)
+    step3 = page.locator('.wstep[data-step="3"]')
+    check("step 3 is titled Tags", step3.locator("h3").inner_text().strip() == "Tags")
+    check("step 3 pill reads Tags", page.locator('.step-pill[data-pill="3"] .t').text_content().strip() == "Tags")
+    check("no feedback-level field in the wizard", page.locator('input[name="fb"]').count() == 0)
+    check("review list has no feedback row", "feedback" not in page.locator("#review").inner_text().lower())
     check(
         "review shows the project name",
         "Hit Stop Demo" in page.locator("#review").inner_text(),

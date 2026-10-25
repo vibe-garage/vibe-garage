@@ -13,7 +13,6 @@ const PROJECT = {
   prompts: ["make it punchy", "add screen shake"],
   tools: ["Cursor", "Claude"],
   tags: ["game", "fun"],
-  feedback: "gentle",
 };
 
 describe("posts", () => {
@@ -33,7 +32,6 @@ describe("posts", () => {
       prompts: PROJECT.prompts,
       tools: PROJECT.tools,
       tags: PROJECT.tags,
-      feedback: "gentle",
     });
     expect(post.author).toMatchObject({
       id: user.user.id,
@@ -75,7 +73,6 @@ describe("posts", () => {
         prompts: [],
         tools: [],
         tags: ["writing"],
-        feedback: "vibes",
       },
       user.ip
     );
@@ -236,6 +233,35 @@ describe("posts", () => {
     expect(payload.posts.some((post) => post.id === kept.data.post.id)).toBe(true);
     expect(payload.posts.some((post) => post.id === postId)).toBe(false);
     expect(JSON.stringify(payload)).not.toContain(owner.email);
+  });
+
+  it("ignores the retired feedback field and keeps old rows valid", async () => {
+    const user = await signupUser();
+    const created = await createPost(user.cookie, { ...PROJECT, feedback: "not-a-level" }, user.ip);
+    expect(created.response.status).toBe(201);
+    expect(created.data.post).not.toHaveProperty("feedback");
+    const id = created.data.post.id;
+
+    const row = await env.DB.prepare("SELECT feedback FROM posts WHERE id = ?1").bind(id).first();
+    expect(row.feedback).toBeNull();
+
+    // A row written before the field was retired still reads and edits cleanly.
+    await env.DB.prepare("UPDATE posts SET feedback = 'tear' WHERE id = ?1").bind(id).run();
+    const edit = await api(`/api/posts/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      cookie: user.cookie,
+      ip: user.ip,
+      body: { title: "Edited Title", feedback: "gentle" },
+    });
+    expect(edit.status).toBe(200);
+    const edited = (await readJson(edit)).post;
+    expect(edited.title).toBe("Edited Title");
+    expect(edited).not.toHaveProperty("feedback");
+    const after = await env.DB.prepare("SELECT feedback FROM posts WHERE id = ?1").bind(id).first();
+    expect(after.feedback).toBe("tear");
+
+    const read = await api(`/api/posts/${encodeURIComponent(id)}`);
+    expect(read.status).toBe(200);
   });
 
   it("returns 404 for malformed percent-encoding in a path parameter", async () => {

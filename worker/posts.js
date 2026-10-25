@@ -4,7 +4,6 @@ import { hit } from "./ratelimit.js";
 import { randomId } from "./crypto.js";
 
 const KINDS = new Set(["project", "guide"]);
-const FEEDBACK = new Set(["vibes", "gentle", "tear"]);
 const SECRET_PATTERNS = [
   /sk-[A-Za-z0-9_-]{20,}/,
   /ghp_[A-Za-z0-9]{30,}/,
@@ -15,7 +14,7 @@ const SECRET_PATTERNS = [
 ];
 
 const POST_SELECT = `SELECT p.id, p.user_id, p.kind, p.title, p.slug, p.body_md,
-  p.pitch, p.link, p.repo, p.code, p.prompts, p.tools, p.tags, p.feedback,
+  p.pitch, p.link, p.repo, p.code, p.prompts, p.tools, p.tags,
   p.image_key, p.created_at, p.updated_at, p.deleted_at,
   u.id AS author_id, u.display_name AS author_display_name, u.avatar_key AS author_avatar_key
   FROM posts p JOIN users u ON u.id = p.user_id`;
@@ -52,7 +51,6 @@ function postJson(row) {
     prompts: parseArray(row.prompts),
     tools: parseArray(row.tools),
     tags: parseArray(row.tags),
-    feedback: FEEDBACK.has(row.feedback) ? row.feedback : "vibes",
     image: imageUrl(row.image_key),
     author: {
       id: row.author_id,
@@ -211,11 +209,8 @@ async function validatePost(body, { partial, current, env, userId }) {
     }
   }
 
-  if (!partial || body.feedback !== undefined) {
-    const feedback = body.feedback === undefined ? "vibes" : body.feedback;
-    if (!FEEDBACK.has(feedback)) return invalid("feedback must be vibes, gentle or tear.");
-    result.feedback = feedback;
-  }
+  // The feedback-level field was retired. Clients may still send it; it is ignored.
+  // Old rows keep whatever value is in the nullable posts.feedback column.
 
   if (!partial || body.image_key !== undefined) {
     const key = body.image_key;
@@ -312,8 +307,8 @@ export async function createPost(request, env) {
 
   await env.DB.prepare(
     `INSERT INTO posts (id, user_id, kind, title, slug, body_md, pitch, link, repo, code,
-      prompts, tools, tags, feedback, image_key, created_at, updated_at, deleted_at)
-     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, NULL)`
+      prompts, tools, tags, image_key, created_at, updated_at, deleted_at)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, NULL)`
   )
     .bind(
       id,
@@ -329,7 +324,6 @@ export async function createPost(request, env) {
       JSON.stringify(values.prompts),
       JSON.stringify(values.tools),
       JSON.stringify(values.tags),
-      values.feedback,
       values.image_key,
       now,
       now
@@ -375,9 +369,9 @@ export async function updatePost(request, env, ctx, params) {
 
   await env.DB.prepare(
     `UPDATE posts SET title = ?1, slug = ?2, body_md = ?3, pitch = ?4, link = ?5,
-      repo = ?6, code = ?7, prompts = ?8, tools = ?9, tags = ?10, feedback = ?11,
-      image_key = ?12, updated_at = ?13
-     WHERE id = ?14`
+      repo = ?6, code = ?7, prompts = ?8, tools = ?9, tags = ?10,
+      image_key = ?11, updated_at = ?12
+     WHERE id = ?13`
   )
     .bind(
       title,
@@ -390,7 +384,6 @@ export async function updatePost(request, env, ctx, params) {
       JSON.stringify(parseArray(typeof next.prompts === "string" ? next.prompts : JSON.stringify(next.prompts))),
       JSON.stringify(parseArray(typeof next.tools === "string" ? next.tools : JSON.stringify(next.tools))),
       JSON.stringify(parseArray(typeof next.tags === "string" ? next.tags : JSON.stringify(next.tags))),
-      next.feedback,
       next.image_key,
       now,
       current.id

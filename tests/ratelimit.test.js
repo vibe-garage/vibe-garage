@@ -14,7 +14,6 @@ const POST_BODY = {
   prompts: [],
   tools: [],
   tags: ["game"],
-  feedback: "vibes",
 };
 
 describe("rate limits", () => {

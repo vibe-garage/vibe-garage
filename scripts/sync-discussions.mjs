@@ -30,7 +30,7 @@ const REACTIONS = [
 const EMPTY_FEED_UPDATED = "1970-01-01T00:00:00Z";
 
 const FBMAP = [[/tear it apart/i, "tear"], [/gentle/i, "gentle"], [/just vibes|no critique/i, "vibes"]];
-const fbOf = (t) => (FBMAP.find(([re]) => re.test(t || "")) || [, "gentle"])[1];
+const fbOf = (t) => (FBMAP.find(([re]) => re.test(t || "")) || [, ""])[1];
 
 function sections(body) {
   const out = {};
