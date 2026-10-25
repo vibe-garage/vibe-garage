@@ -36,5 +36,6 @@ window.VG_CONFIG = {
   giscus: { enabled: true, theme: "https://vibegarage.neozonesproductions.com/assets/giscus-theme.css?v=4214d84c9a" },
   // GoatCounter site code: the subdomain of https://<code>.goatcounter.com.
   // An empty string keeps analytics off, and no analytics script is loaded.
-  analytics: { goatcounter: "" }
+  // cfBeacon: Cloudflare Web Analytics token (free, cookieless, no personal data). Empty string turns it off.
+  analytics: { goatcounter: "", cfBeacon: "f6b0c50f9cf5430c9792ce3c762bd50e" }
 };

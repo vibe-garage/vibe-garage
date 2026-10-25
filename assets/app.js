@@ -523,6 +523,14 @@
     sendGiscusTheme();
   }
   function mountAnalytics() {
+    const cf = String((C.analytics && C.analytics.cfBeacon) || "").trim();
+    if (/^[a-f0-9]{32}$/.test(cf) && !document.querySelector("script[data-cf-beacon]")) {
+      const b = document.createElement("script");
+      b.defer = true;
+      b.src = "https://static.cloudflareinsights.com/beacon.min.js";
+      b.setAttribute("data-cf-beacon", JSON.stringify({ token: cf }));
+      document.body.appendChild(b);
+    }
     const code = String((C.analytics && C.analytics.goatcounter) || "").trim();
     if (!/^[A-Za-z0-9-]{1,64}$/.test(code)) return;
     if (document.querySelector("script[data-goatcounter]")) return;

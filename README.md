@@ -38,7 +38,7 @@ The site is plain HTML, CSS, and vanilla JS on GitHub Pages. There is no build s
 - **Challenges and guides.** Challenge cards show deadline, status, poll bars, and a GitHub thumbs-up vote link. "Enter this challenge" opens `submit.html?challenge=N`. "Propose a challenge" and "Write a guide" open a GitHub Discussion titled `[Challenge] ` or `[Guide] `.
 - **Stay in the loop.** Home and the footer link the Atom feed, the GitHub watch page, and Discussions. Every page has `<link rel="alternate" type="application/atom+xml">`.
 - **Theme.** The header toggle stores `light` or `dark` in `localStorage` (`vg-theme`). A script in `<head>` applies it before CSS paints. giscus follows the same theme.
-- **Analytics.** GoatCounter stays off while `analytics.goatcounter` is empty. A site code loads `https://gc.zgo.at/count.js` with `data-goatcounter`. See below.
+- **Analytics.** Cloudflare Web Analytics (free, cookieless) is on via `analytics.cfBeacon` in `assets/config.js`; set it to `""` to turn it off. Stats: Cloudflare dashboard > Analytics & Logs > Web Analytics > vibegarage.neozonesproductions.com. GoatCounter stays off while `analytics.goatcounter` is empty. A site code loads `https://gc.zgo.at/count.js` with `data-goatcounter`. See below.
 
 ## Posting conventions
 
