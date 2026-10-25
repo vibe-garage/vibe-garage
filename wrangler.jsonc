@@ -1,0 +1,34 @@
+// NOTE: Replace the D1 and KV placeholders below at go-live.
+// TURNSTILE_SECRET is a secret: set it with `wrangler secret put TURNSTILE_SECRET`.
+// The local development value lives in `.dev.vars`.
+{
+  "name": "vibe-garage",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/img/*"],
+    "not_found_handling": "404-page",
+    "html_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vibe_garage",
+      "database_id": "REPLACE_WITH_D1_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "IMAGES",
+      "id": "REPLACE_WITH_KV_ID"
+    }
+  ],
+  "vars": {
+    "TURNSTILE_SITEKEY": "1x00000000000000000000AA",
+    "SITE_ORIGIN": "https://vibegarage.neozonesproductions.com",
+    "PBKDF2_ITER": "100000"
+  }
+}

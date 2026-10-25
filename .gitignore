@@ -1,3 +1,6 @@
 build.py
 shots/
 graphify-out/
+node_modules/
+.wrangler/
+.dev.vars
