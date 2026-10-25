@@ -8,7 +8,7 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/img/*"],
+    "run_worker_first": ["/", "/api/*", "/img/*"],
     "not_found_handling": "404-page",
     "html_handling": "none"
   },
@@ -29,6 +29,6 @@
   "vars": {
     "TURNSTILE_SITEKEY": "0x4AAAAAAFkxd8mu4IHKRiVt",
     "SITE_ORIGIN": "https://vibegarage.neozonesproductions.com",
-    "PBKDF2_ITER": "100000"
+    "PBKDF2_ITER": "20000"
   }
 }
