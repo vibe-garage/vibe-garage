@@ -363,7 +363,8 @@ export async function updatePost(request, env, ctx, params) {
 
   const next = { ...current, ...check.value };
   const title = next.title;
-  const now = nowSec();
+  // created_at/updated_at use whole seconds; make sure an edit is always visible as newer.
+  const now = Math.max(nowSec(), current.updated_at + 1);
 
   await env.DB.prepare(
     `UPDATE posts SET title = ?1, slug = ?2, body_md = ?3, pitch = ?4, link = ?5,

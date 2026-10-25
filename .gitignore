@@ -1,5 +1,6 @@
 build.py
 shots/
+tests/smoke-shots/
 graphify-out/
 node_modules/
 .wrangler/

@@ -111,7 +111,9 @@ export async function verifyTurnstile(token, ip, env) {
   if (typeof token !== "string" || token.length === 0) return false;
 
   const secret = env.TURNSTILE_SECRET;
-  if (!secret || secret === TEST_TURNSTILE_SECRET) {
+  // Fail closed: with no secret configured, sign-up is refused (set TURNSTILE_SECRET before go-live).
+  if (!secret) return false;
+  if (secret === TEST_TURNSTILE_SECRET) {
     return token.length > 0;
   }
 
