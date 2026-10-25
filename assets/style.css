@@ -576,6 +576,14 @@ nav.main .nav-theme .ico[hidden]{display:none}
   .bar-tools .icon-btn,.top .burger{width:34px;height:34px}
   .bar-tools .btn.sm{padding:0 6px;min-height:34px;font-size:.72rem}
 }
+/* Rules: an odd last card spans the full row so the grid stays tidy */
+@media(min-width:761px){.rules>.rule:last-child:nth-child(odd){grid-column:1/-1}}
+/* Step pills: short labels on phones */
+.step-pill .ts{display:none}
+@media(max-width:560px){.step-pill .ts{display:inline;font-size:.86rem;white-space:nowrap}.step-pill{gap:8px;padding:10px 8px}}
+/* Home NEW pill: stay on one line and truncate on narrow phones */
+.pill{max-width:100%}
+.pill .pill-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* long-form guides */
 .guide-head h1{font-size:clamp(2.1rem,5.4vw,4.2rem);line-height:1.02;margin-top:.35em;max-width:20ch}
 .guide-head .guide-meta{margin:.2em 0 .8em}
