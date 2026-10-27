@@ -9,6 +9,8 @@ import {
   getUserProfile,
 } from "./posts.js";
 import { uploadImage, uploadAvatar, serveImage } from "./images.js";
+import { BEACON, hit, stats, isOwner, isTrackedPage } from "./metrics.js";
+import { STATS_PAGE } from "./stats-page.js";
 
 async function config(request, env) {
   return json({ turnstileSiteKey: env.TURNSTILE_SITEKEY || "" });
@@ -29,6 +31,8 @@ const routes = [
   { method: "DELETE", path: "/api/posts/:id", handler: deletePost },
   { method: "GET", path: "/api/users/:id", handler: getUserProfile },
   { method: "PUT", path: "/api/images", handler: uploadImage },
+  { method: "POST", path: "/api/hit", handler: hit },
+  { method: "GET", path: "/api/stats", handler: stats },
 ];
 
 function matchPath(pattern, pathname) {
@@ -108,8 +112,24 @@ export default {
       return serveImage(request, env, key);
     }
 
-    if (url.pathname === "/") {
-      return env.ASSETS.fetch(new Request(new URL("/index.html", url), request));
+    if (url.pathname === "/stats.html") {
+      if (!(await isOwner(request, env))) {
+        const notFound = await env.ASSETS.fetch(new Request(new URL("/404.html", url), request));
+        return new Response(notFound.body, { status: 404, headers: notFound.headers });
+      }
+      return new Response(STATS_PAGE, {
+        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
+      });
+    }
+
+    if (isTrackedPage(url.pathname)) {
+      const assetUrl = url.pathname === "/" ? new URL("/index.html", url) : url;
+      const res = await env.ASSETS.fetch(new Request(assetUrl, request));
+      // Add the first-party page-view beacon (see metrics.js) to HTML pages served OK.
+      if (res.status !== 200 || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
+      return new HTMLRewriter()
+        .on("body", { element: (el) => el.append(BEACON, { html: true }) })
+        .transform(res);
     }
 
     if (GISCUS_THEME_CSS.test(url.pathname)) {
