@@ -8,7 +8,7 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/api/*", "/img/*", "/assets/giscus-theme*.css"],
+    "run_worker_first": ["/", "/*.html", "/api/*", "/img/*", "/assets/giscus-theme*.css"],
     "not_found_handling": "404-page",
     "html_handling": "none"
   },
@@ -29,6 +29,8 @@
   "vars": {
     "TURNSTILE_SITEKEY": "0x4AAAAAAFkxd8mu4IHKRiVt",
     "SITE_ORIGIN": "https://vibegarage.neozonesproductions.com",
-    "PBKDF2_ITER": "20000"
+    "PBKDF2_ITER": "20000",
+    // Users allowed to see /stats.html and /api/stats (Lexi Volt). User IDs are public, not secrets.
+    "STATS_OWNER_IDS": "43PJtDjiETCrISmF-BgD4A"
   }
 }
