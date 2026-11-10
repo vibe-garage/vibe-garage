@@ -46,7 +46,13 @@ const version = Object.fromEntries(ASSETS.map((f) => [f, hashOf(f)]));
 // (href|src)="[/]assets/<file>[?v=...]"
 const ref = new RegExp(`((?:href|src)="/?assets/(${ASSETS.map(escape).join("|")}))${V}"`, "g");
 
-for (const page of readdirSync(ROOT).filter((f) => f.endsWith(".html")).sort()) {
+// First-party page folders (root-absolute /assets/ links) are stamped too.
+const PAGE_DIRS = ["spark-swarm"];
+const pages = [
+  ...readdirSync(ROOT).filter((f) => f.endsWith(".html")),
+  ...PAGE_DIRS.flatMap((d) => readdirSync(join(ROOT, d)).filter((f) => f.endsWith(".html")).map((f) => `${d}/${f}`)),
+].sort();
+for (const page of pages) {
   rewrite(join(ROOT, page), page, ref, (_m, attr, file) => `${attr}?v=${version[file]}"`);
 }
 console.log(changed ? `${changed} file(s) updated` : "all files already current");

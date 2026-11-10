@@ -236,7 +236,7 @@ function feedXml(config, entries) {
 }
 
 function sitemapXml(config, htmlFiles, dynamic) {
-  const names = [...htmlFiles].filter((f) => f.endsWith(".html") && f !== "404.html").sort();
+  const names = [...htmlFiles].filter((f) => (f.endsWith(".html") || f.endsWith("/")) && f !== "404.html").sort();
   const locs = [];
   if (names.includes("index.html")) locs.push(siteBase(config));
   for (const f of names) {
@@ -541,6 +541,11 @@ async function main() {
 
   const root = new URL("../", import.meta.url);
   const htmlFiles = fs.readdirSync(root).filter((f) => f.endsWith(".html"));
+  // First-party page folders: a folder's index.html is listed as the folder URL (e.g. spark-swarm/).
+  for (const dir of ["spark-swarm"]) {
+    const files = fs.existsSync(new URL(dir + "/", root)) ? fs.readdirSync(new URL(dir + "/", root)) : [];
+    for (const f of files.filter((f) => f.endsWith(".html")).sort()) htmlFiles.push(f === "index.html" ? `${dir}/` : `${dir}/${f}`);
+  }
   const now = new Date().toISOString();
   const snap = buildSnapshot({ discussions: all, categories: cats, pinned, owner, name, config, htmlFiles, now });
   writeText("../data/discussions.json", JSON.stringify(snap.discussions, null, 1));

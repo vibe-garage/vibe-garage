@@ -123,7 +123,7 @@ export default {
     }
 
     if (isTrackedPage(url.pathname)) {
-      const assetUrl = url.pathname === "/" ? new URL("/index.html", url) : url;
+      const assetUrl = url.pathname.endsWith("/") ? new URL(url.pathname + "index.html", url) : url;
       const res = await env.ASSETS.fetch(new Request(assetUrl, request));
       // Add the first-party page-view beacon (see metrics.js) to HTML pages served OK.
       if (res.status !== 200 || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
