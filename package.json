@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler dev --local",
     "db:local": "wrangler d1 migrations apply vibe_garage --local",
-    "test": "vitest run",
+    "test": "vitest run && node --test tests/sync-discussions.test.mjs",
     "smoke": "python3 tests/smoke.py"
   },
   "devDependencies": {

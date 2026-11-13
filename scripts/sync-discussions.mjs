@@ -91,9 +91,29 @@ function person(author) {
   if (!login) return null;
   return {
     login,
-    avatar: author.avatarUrl || "",
+    avatar: author.avatarUrl || author.avatar || "",
     url: author.url || `https://github.com/${login}`,
   };
+}
+
+// Site-owned posts (welcome thread, announcements) should not publish a
+// personal GitHub login or profile URL. The Atom feed already attributes
+// entries to "Vibe Garage"; pages and JSON use this public identity.
+export const SITE_PUBLIC_AUTHOR = {
+  login: "Vibe Garage team",
+  avatar: "/assets/icon-192.png",
+  url: "",
+};
+
+const PRIVATE_LOGINS = new Set(["firestarterxox"]);
+
+export function publicPerson(author) {
+  const p = person(author);
+  if (!p) return null;
+  if (PRIVATE_LOGINS.has(p.login.toLowerCase())) {
+    return { ...SITE_PUBLIC_AUTHOR };
+  }
+  return p;
 }
 
 function excerpt(text, n = 240) {
@@ -177,7 +197,7 @@ function see(member, when) {
 }
 
 function bump(members, author, { projects = 0, threads = 0, replies = 0, reactions = 0, when = null } = {}) {
-  const p = person(author);
+  const p = publicPerson(author);
   if (!p) return;
   let m = members.get(p.login);
   if (!m) {
@@ -290,9 +310,10 @@ export function buildSnapshot({ discussions, categories, pinned, owner, name, co
 
   for (const d of discussions || []) {
     if (!d || d.number == null) continue;
-    const by = d.author?.login || "ghost";
-    const avatar = d.author?.avatarUrl || "";
-    const authorUrl = d.author?.url || (d.author?.login ? `https://github.com/${d.author.login}` : "");
+    const p = publicPerson(d.author) || { login: "ghost", avatar: "", url: "" };
+    const by = p.login;
+    const avatar = p.avatar;
+    const authorUrl = p.url;
     const reactions = reactionsOf(d);
     const labels = labelsOf(d);
     const project = isProjectDiscussion(d, projCat, marker);
