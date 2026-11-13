@@ -49,3 +49,52 @@ describe("favicon", () => {
     expect(Number(response.headers.get("content-length") || 0) || (await response.arrayBuffer()).byteLength).toBeGreaterThan(100);
   });
 });
+
+describe("public author identity", () => {
+  const BANNED = ["firestarterxox", "github.com/firestarterxox"];
+
+  async function read(path) {
+    const response = await api(path);
+    expect(response.status).toBe(200);
+    return response.text();
+  }
+
+  it("does not serve the personal GitHub login in public JSON, the feed, or app.js", async () => {
+    const bodies = await Promise.all([
+      read("/data/members.json"),
+      read("/data/discussions.json"),
+      read("/data/projects.json"),
+      read("/data/guides.json"),
+      read("/data/challenges.json"),
+      read("/feed.xml"),
+      read("/assets/app.js"),
+    ]);
+    for (const body of bodies) {
+      const lower = body.toLowerCase();
+      for (const token of BANNED) {
+        expect(lower).not.toContain(token.toLowerCase());
+      }
+    }
+  });
+
+  it("shows the welcome thread and member as Vibe Garage team, with no GitHub profile URL", async () => {
+    const members = JSON.parse(await read("/data/members.json"));
+    const discussions = JSON.parse(await read("/data/discussions.json"));
+    expect(members.members).toHaveLength(1);
+    const member = members.members[0];
+    expect(member.login).toBe("Vibe Garage team");
+    expect(member.url).toBe("");
+    expect(member.avatar).toBe("/assets/icon-192.png");
+
+    const welcome = discussions.threads.find((t) => t.id === "gh-1");
+    expect(welcome).toBeTruthy();
+    expect(welcome.by).toBe("Vibe Garage team");
+    expect(welcome.avatar).toBe("/assets/icon-192.png");
+  });
+
+  it("does not invent a GitHub profile URL from a login in app.js", async () => {
+    const js = await read("/assets/app.js");
+    expect(js).not.toMatch(/https:\/\/github\.com\/\$\{esc\(login\)\}/);
+    expect(js).not.toMatch(/https:\/\/github\.com\/" \+ m\.login/);
+  });
+});

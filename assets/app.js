@@ -1212,13 +1212,13 @@ ${giscus(t.number)}`;
         const m = members.find((row) => String(row.login).toLowerCase() === login.toLowerCase());
         if (!m) {
           setSeo({ title: "Builder not found · Vibe Garage", description: "That builder is not in the latest Vibe Garage snapshot.", path: "profile.html" });
-          const safe = /^[A-Za-z0-9-]+$/.test(login);
-          root.innerHTML = empty("Builder not in this snapshot", safe ? `We don’t have @${esc(login)} in the latest sync. They may not have posted yet.` : "That profile link doesn’t look right.", safe ? `<p style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn sm" href="https://github.com/${esc(login)}" target="_blank" rel="noopener noreferrer">GitHub profile</a><a class="btn ghost sm" href="${url("profile.html")}">All builders</a></p>` : `<a class="btn sm" href="${url("profile.html")}">All builders</a>`);
+          const safe = login.length > 0 && login.length <= 80;
+          root.innerHTML = empty("Builder not in this snapshot", safe ? `We don’t have ${esc(login)} in the latest sync. They may not have posted yet.` : "That profile link doesn’t look right.", `<a class="btn sm" href="${url("profile.html")}">All builders</a>`);
           return;
         }
         const mineP = projects.filter((p) => p.by === m.login);
         const mineT = threads.filter((t) => t.by === m.login);
-        const gh = httpUrl(m.url) || ( /^[A-Za-z0-9-]+$/.test(m.login) ? "https://github.com/" + m.login : "");
+        const gh = httpUrl(m.url);
         setSeo({ title: "@" + m.login + " · Vibe Garage", description: "@" + m.login + " on Vibe Garage. " + (m.projects || 0) + " projects, " + (m.threads || 0) + " threads, score " + (m.score || 0) + ".", path: "profile.html?u=" + encodeURIComponent(m.login) });
         root.innerHTML = `<div class="page-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="${url("profile.html")}">${ic("arrow-left")} all builders</a><div class="prof"><div class="av lg">${m.avatar ? `<img src="${esc(m.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover">` : esc(m.login[0].toUpperCase())}</div><div><h1>@${esc(m.login)}</h1><p>${gh ? `<a href="${esc(gh)}" target="_blank" rel="noopener noreferrer">${ic("github")} GitHub profile</a>` : ""}</p><div class="pstats"><div><b>${m.score || 0}</b><small>score</small></div><div><b>${m.projects || 0}</b><small>projects</small></div><div><b>${m.threads || 0}</b><small>threads</small></div><div><b>${m.replies || 0}</b><small>replies</small></div><div><b>${m.reactions || 0}</b><small>reactions</small></div></div><p class="muted">${m.firstSeen ? "First seen " + esc(day(m.firstSeen)) : ""}${m.lastSeen ? " · last seen " + esc(day(m.lastSeen)) : ""}</p></div></div></div><section><div class="sec-h"><h2>Projects</h2></div><div class="grid3">${mineP.length ? mineP.map((p) => card(p)).join("") : `<p class="muted">No projects from @${esc(m.login)} yet.</p>`}</div></section><section><div class="sec-h"><h2>Threads</h2></div><div class="threads">${mineT.length ? mineT.map(threadRow).join("") : `<p class="muted">No threads from @${esc(m.login)} yet.</p>`}</div></section>`;
         reveal(root);
