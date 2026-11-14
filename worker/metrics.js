@@ -9,7 +9,7 @@ const PAGES = new Set([
   "/", "/index.html", "/learn.html", "/projects.html", "/project.html", "/submit.html",
   "/account.html", "/profile.html", "/forum.html", "/thread.html", "/challenges.html",
   "/leaderboard.html", "/guidelines.html", "/local-llm-guide.html",
-  "/spark-swarm/", "/spark-swarm/index.html", "/spark-swarm/ep01.html", "/spark-swarm/ep02.html", "/spark-swarm/ep03.html",
+  "/spark-swarm/", "/spark-swarm/index.html", "/spark-swarm/ep01.html", "/spark-swarm/ep02.html", "/spark-swarm/ep03.html", "/spark-swarm/ep04.html",
 ]);
 const BOT_RE = /bot|crawl|spider|slurp|scrape|preview|fetch|curl|wget|python|httpx|axios|go-http|java\/|okhttp|libwww|headless|phantom|puppeteer|playwright|selenium|lighthouse|pagespeed|gtmetrix|pingdom|uptime|monitor|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|vercel|node-fetch|undici/i;
 const MOBILE_RE = /mobi|android|iphone|ipad|ipod/i;

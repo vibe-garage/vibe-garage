@@ -100,7 +100,7 @@ describe("public author identity", () => {
 });
 
 describe("spark-swarm episode pages", () => {
-  for (const ep of ["ep01", "ep02", "ep03"]) {
+  for (const ep of ["ep01", "ep02", "ep03", "ep04"]) {
     it(`serves /spark-swarm/${ep}.html with the page-view beacon`, async () => {
       const response = await api(`/spark-swarm/${ep}.html`);
       expect(response.status).toBe(200);
