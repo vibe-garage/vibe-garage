@@ -98,3 +98,19 @@ describe("public author identity", () => {
     expect(js).not.toMatch(/https:\/\/github\.com\/" \+ m\.login/);
   });
 });
+
+describe("spark-swarm episode pages", () => {
+  for (const ep of ["ep01", "ep02", "ep03"]) {
+    it(`serves /spark-swarm/${ep}.html with the page-view beacon`, async () => {
+      const response = await api(`/spark-swarm/${ep}.html`);
+      expect(response.status).toBe(200);
+      expect(await response.text()).toContain("/api/hit");
+    });
+
+    it(`serves /spark-swarm/${ep}.zip`, async () => {
+      const response = await api(`/spark-swarm/${ep}.zip`);
+      expect(response.status).toBe(200);
+      await response.arrayBuffer();
+    });
+  }
+});
