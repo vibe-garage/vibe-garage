@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-23T21:05:30.981Z",
+ "generated": "2026-11-26T16:42:24.160Z",
  "score": "projects*10 + threads*3 + replies*1 + reactions",
  "weights": {
   "projects": 10,
@@ -20,6 +20,19 @@
    "score": 3,
    "firstSeen": "2026-10-21T00:17:55Z",
    "lastSeen": "2026-10-21T00:17:55Z",
+   "real": true
+  },
+  {
+   "login": "VellivexHQ",
+   "avatar": "https://avatars.githubusercontent.com/u/351229783?s=80&v=4",
+   "url": "https://github.com/VellivexHQ",
+   "projects": 0,
+   "threads": 0,
+   "replies": 1,
+   "reactions": 0,
+   "score": 1,
+   "firstSeen": "2026-11-14T20:16:15Z",
+   "lastSeen": "2026-11-14T20:16:15Z",
    "real": true
   }
  ]
