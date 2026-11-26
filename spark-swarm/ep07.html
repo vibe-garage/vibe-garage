@@ -1,0 +1,101 @@
+<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0f17">
+<script>
+(function(){try{var k="vg-theme",t=localStorage.getItem(k);if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",document.documentElement.getAttribute("data-theme")==="light"?"#f4f7fb":"#0a0f17");})();
+</script>
+<title>Spark Swarm Episode 7: Game Over · Vibe Garage</title><meta name="description" content="Free Godot 4.8 project files for Spark Swarm Episode 7, Game Over. A died signal that fires exactly once, a game over screen that reads the wave you reached, and a restart that reloads the scene instead of resetting by hand.">
+<link rel="canonical" href="https://vibegarage.neozonesproductions.com/spark-swarm/ep07.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Vibe Garage">
+<meta property="og:title" content="Spark Swarm Episode 7: Game Over · Vibe Garage"><meta property="og:description" content="Free Godot 4.8 project files for Spark Swarm Episode 7, Game Over. A died signal that fires exactly once, a game over screen that reads the wave you reached, and a restart that reloads the scene instead of resetting by hand.">
+<meta property="og:url" content="https://vibegarage.neozonesproductions.com/spark-swarm/ep07.html">
+<meta property="og:image" content="https://vibegarage.neozonesproductions.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Vibe Garage">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Spark Swarm Episode 7: Game Over · Vibe Garage"><meta name="twitter:description" content="Free Godot 4.8 project files for Spark Swarm Episode 7, Game Over. A died signal that fires exactly once, a game over screen that reads the wave you reached, and a restart that reloads the scene instead of resetting by hand."><meta name="twitter:image" content="https://vibegarage.neozonesproductions.com/assets/og.png">
+<link rel="alternate" type="application/atom+xml" title="Vibe Garage" href="https://vibegarage.neozonesproductions.com/feed.xml">
+<link rel="icon" href="/assets/icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/assets/icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css?v=f3e88727c7">
+<script src="/assets/config.js?v=8308d6b9ce" defer></script><script src="/assets/data.js?v=555583636d" defer></script><script src="/assets/icons.js?v=640b2ecfb3" defer></script><script src="/assets/art.js?v=73de6f5daf" defer></script><script src="/assets/native.js?v=b530204329" defer></script><script src="/assets/app.js?v=1fa4dee2ed" defer></script><script src="/assets/guide.js?v=9476f4b7f2" defer></script>
+<style>.doc a.btn{text-decoration:none}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Spark Swarm Episode 7: Game Over","description":"Free Godot 4.8 project files for Spark Swarm Episode 7, Game Over. A died signal that fires exactly once, a game over screen that reads the wave you reached, and a restart that reloads the scene instead of resetting by hand.","url":"https://vibegarage.neozonesproductions.com/spark-swarm/ep07.html","inLanguage":"en","isPartOf":{"@type":"CreativeWorkSeries","name":"Spark Swarm","url":"https://vibegarage.neozonesproductions.com/spark-swarm/"},"datePublished":"2026-11-25","learningResourceType":"Project files","educationalLevel":"Beginner","license":"https://opensource.org/licenses/MIT"}</script>
+</head>
+<body data-page="guide">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="bar"><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a>
+<nav class="main" id="site-nav"><a href="/index.html">Home</a><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html" class="on">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a><a class="btn sm nav-cta" href="/submit.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /> <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /> <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg> Submit</a></nav>
+<div class="bar-tools"><button type="button" class="icon-btn" id="search-open" aria-label="Search" aria-keyshortcuts="/" aria-expanded="false" aria-controls="search-modal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></button><a class="btn ghost sm" id="account-link" href="/account.html">Sign in</a><button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme"><svg class="ico theme-to-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="M4.93 4.93l1.41 1.41" /> <path d="M17.66 17.66l1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="M6.34 17.66l-1.41 1.41" /> <path d="M19.07 4.93l-1.41 1.41" /></svg><svg class="ico theme-to-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button><button type="button" class="burger" aria-label="Menu" aria-controls="site-nav" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12" /> <line x1="4" x2="20" y1="6" y2="6" /> <line x1="4" x2="20" y1="18" y2="18" /></svg></button></div></div></header>
+<main id="main"><div class="wrap"><div class="page-head guide-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Spark Swarm</a><h1>Episode 7: Game Over</h1><p class="guide-meta"><em>Spark Swarm &middot; Godot 4.8 beta 1 &middot; airs Wed Nov 25, 2026</em></p><div class="tags"><span class="tag">#godot</span><span class="tag">#gdscript</span><span class="tag">#beginner</span><span class="tag">#spark-swarm</span></div></div>
+<div class="guide-layout"><nav class="panel toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#watch">Watch</a></li><li><a href="#get-the-project">Get the project</a></li><li><a href="#what-you-build">What you build</a></li><li><a href="#run-it">Run it</a></li><li><a href="#make-it-yours">Make it yours</a></li><li><a href="#how-its-made">How it's made</a></li></ul></nav>
+<article class="doc">
+<p>Your swarm learned to breathe in Episode 5 — and in Episode 6 it learned to bite back. But a spark at zero health just keeps fighting. Today the run gets an ending: a died signal that fires exactly once, a game over screen that freezes the world and reads the wave you reached, and a restart that actually restarts.</p>
+<figure class="diagram"><img src="/spark-swarm/img/ep07.webp" width="1200" height="676" alt="Episode 7 gameplay: the yellow spark alone in the dark arena, its health counter at zero" loading="eager"><figcaption>A frame from the finished Episode 7 build: the counter at zero.</figcaption></figure>
+<h2 id="watch">Watch</h2>
+<p><a class="btn" href="https://www.youtube.com/watch?v=py6PLAkQPUk" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg> Watch Episode 7 on YouTube</a> <a class="btn ghost" href="https://www.youtube.com/playlist?list=PLSZThGGbiCo0" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h.01" /> <path d="M3 18h.01" /> <path d="M3 6h.01" /> <path d="M8 12h13" /> <path d="M8 18h13" /> <path d="M8 6h13" /></svg> Full playlist</a></p><p class="muted">&ldquo;Godot 4.8 for Beginners: Give Your Game an Ending&rdquo; &middot; 8:34 &middot; airs Wed Nov 25, 2026</p>
+<h2 id="get-the-project">Get the project (free)</h2>
+<p>The complete Godot project as it stands at the end of Episode 7. Open it and press Play.</p>
+<p><a class="btn" href="/spark-swarm/ep07.zip" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> <path d="M12 15V3" /></svg> Download ep07.zip</a></p>
+<p class="muted">Code is MIT, so use it in your own games. The sprite art is simple placeholder art made for this series.</p>
+<h2 id="what-you-build">What you build</h2>
+<ol>
+<li>A <code>died</code> signal and an <code>is_dead</code> state flag on the spark, so death fires exactly once — even when two crabs land on the same physics step. The flag is set before the signal shouts, so listeners already see the final state.</li>
+<li>A game over screen on a CanvasLayer: a dim over the frozen arena, GAME OVER, the wave you reached, and the restart hint. The screen finds the spark by its <code>player</code> group and connects to <code>died</code> — the same move the banner used in Episode 5.</li>
+<li>The paused-tree trap: pausing the tree stops the game over layer too, so your restart key goes deaf. The fix is one Inspector setting — the layer&#x27;s Process Mode set to Always.</li>
+<li>A restart control: an input action named <code>restart</code> on the R key, added in Project Settings &gt; Input Map — Episode 1&#x27;s rule: name your controls, then ask for the name in code.</li>
+<li>The restart bug: resetting by hand — health back, wave back, panel hidden — never frees the old run&#x27;s live crabs, and a SpawnTimer still running from the old wave drops an owed crab into the fresh run.</li>
+<li>The real fix: unpause first (the paused flag survives a scene change, so reloading while paused starts the new run frozen), then <code>reload_current_scene()</code>. The scene file is the reset list, so the next run starts exactly as saved: health full, wave zero, arena empty.</li>
+</ol>
+<h3>The ending and the restart (game_over.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>func _on_game_over() -&gt; void:
+	if _over:
+		return
+	_over = true
+	var wave := 0
+	var spawner := get_tree().get_first_node_in_group(&quot;spawner&quot;)
+	if spawner != null:
+		wave = int(spawner.get(&quot;wave_number&quot;))
+	_sub.text = &quot;You reached wave %d&quot; % wave
+	_panel.show()
+	get_tree().paused = true
+
+
+func _unhandled_input(event: InputEvent) -&gt; void:
+	if _over and event.is_action_pressed(&quot;restart&quot;):
+		# Unpause FIRST: SceneTree.paused survives a scene change,
+		# so reloading while paused starts the new run frozen.
+		get_tree().paused = false
+		get_tree().reload_current_scene()</code></pre></div>
+<h3>What&#x27;s in the folder</h3>
+<ul>
+<li><code>game_over.gd</code>: the game over layer — hears <code>died</code>, fills in the wave, pauses the tree, restarts on R (new in this episode)</li>
+<li><code>spark.gd</code>: Episodes 1–6, plus the <code>died</code> signal and the <code>is_dead</code> flag (new in this episode)</li>
+<li><code>wave_spawner.gd</code>, <code>wave_banner.gd</code> and <code>crab.gd</code>: the Episode 5–6 systems, unchanged</li>
+<li><code>arena.tscn</code>: the arena scene, now with the GameOver layer in the tree and the <code>restart</code> action in the project settings</li>
+</ul>
+<h2 id="run-it">Run it</h2>
+<ol>
+<li>Install <a href="https://godotengine.org/download/archive/4.8-beta1/" target="_blank" rel="noopener noreferrer">Godot 4.8 beta 1</a> (the standard build).</li>
+<li>Unzip <code>ep07.zip</code>.</li>
+<li>In Godot&#x27;s Project Manager, click <strong>Import</strong> and pick <code>project.godot</code> inside the <code>spark-swarm-ep07</code> folder.</li>
+<li>Press <strong>Play</strong> (F5). Move with WASD, the arrow keys or a gamepad. Zap with Space or the bottom face button.</li>
+</ol>
+<blockquote class="callout"><p><strong>One honest limit:</strong> nothing is saved. Your best wave is forgotten the moment you restart, and a restart is a full rebuild of the scene, not a continue. That is fine at this size — and it is exactly what a run-based game wants for now.</p></blockquote>
+<h2 id="make-it-yours">
+<p>Set First Wave Size to 6 and Wave Growth to 3, and predict the run before you play: how many crabs across waves one to three? (27: six, plus nine, plus twelve.) Then chase your own best wave — while you still have to remember it yourself. Episode 8 puts it on the screen.</p>
+<p>Then show us. Share a clip or a screenshot of your version, tell us what you changed, and see what everyone else built.</p>
+<p><!-- POST-YOUR-VERSION: Discussion not created yet. When it exists, set data-discussion to its number and href to /thread.html?id=gh-NUMBER --><a class="btn" id="post-your-version" data-discussion="" href="https://github.com/vibe-garage/vibe-garage/discussions/categories/show-and-tell" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 0 0 4 16.1L2 22Z" /></svg> Post your version</a></p>
+<h2 id="how-its-made">How it&#x27;s made</h2>
+<p><strong>How this series is made:</strong> Lexi Volt&#x27;s narration voice is AI-generated, and the scripts, the music and the project code were written with AI tools. Every project is then built, run and tested in the real Godot 4.8 beta 1 editor, and the files here match the code shown in the video. The sprite art is simple placeholder art made for this series.</p>
+<p class="doc-back"><a class="btn ghost sm" href="/spark-swarm/ep06.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Episode 6</a> <span class="tag">Next: Episode 8, Heads Up</span></p>
+</article></div><p class="doc doc-back"><a class="btn ghost sm" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> All Spark Swarm episodes</a></p><p class="sr-only" aria-live="polite" id="copy-status"></p></div></main>
+
+<footer><div class="wrap"><div class="loop"><div><h2>Stay in the loop</h2><p>Forum threads land in the Atom feed. You can also follow them in Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="/feed.xml">Atom feed</a><a class="btn ghost sm" href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div></div><div class="cols">
+<div><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a><p style="max-width:340px">A cozy late-night hangout for people who build with AI. Half-finished is welcome here.</p></div>
+<div><h4>Explore</h4><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a></div>
+<div><h4>Share</h4><a href="/submit.html">Submit a project</a><a href="/forum.html">Start a thread</a><a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></div>
+<div><h4>Community</h4><a href="/guidelines.html">Community guidelines</a><a href="/guidelines.html#report">Report something</a><a href="/guidelines.html#mods">Moderation</a></div></div>
+<div class="fine"><span>© 2026 Vibe Garage · forum runs on <a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></span><span>Icons: <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide</a> (ISC) · Fonts: Google Fonts (OFL) · Cover art generated in-browser</span></div></div></footer>
+<script>(function(){try{if(navigator.webdriver)return;fetch("/api/hit",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({p:location.pathname,s:location.search,r:document.referrer})}).catch(function(){})}catch(e){}})()</script></body></html>

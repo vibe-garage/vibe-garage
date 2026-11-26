@@ -1,0 +1,112 @@
+<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0f17">
+<script>
+(function(){try{var k="vg-theme",t=localStorage.getItem(k);if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",document.documentElement.getAttribute("data-theme")==="light"?"#f4f7fb":"#0a0f17");})();
+</script>
+<title>Spark Swarm Episode 6: Ouch · Vibe Garage</title><meta name="description" content="Free Godot 4.8 project files for Spark Swarm Episode 6, Ouch. Give the spark 100 health, let a crab&#x27;s touch cost ten of it, and fix the hug that lands sixty hits a second with a mercy cooldown and a knockback.">
+<link rel="canonical" href="https://vibegarage.neozonesproductions.com/spark-swarm/ep06.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Vibe Garage">
+<meta property="og:title" content="Spark Swarm Episode 6: Ouch · Vibe Garage"><meta property="og:description" content="Free Godot 4.8 project files for Spark Swarm Episode 6, Ouch. Give the spark 100 health, let a crab&#x27;s touch cost ten of it, and fix the hug that lands sixty hits a second with a mercy cooldown and a knockback.">
+<meta property="og:url" content="https://vibegarage.neozonesproductions.com/spark-swarm/ep06.html">
+<meta property="og:image" content="https://vibegarage.neozonesproductions.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Vibe Garage">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Spark Swarm Episode 6: Ouch · Vibe Garage"><meta name="twitter:description" content="Free Godot 4.8 project files for Spark Swarm Episode 6, Ouch. Give the spark 100 health, let a crab&#x27;s touch cost ten of it, and fix the hug that lands sixty hits a second with a mercy cooldown and a knockback."><meta name="twitter:image" content="https://vibegarage.neozonesproductions.com/assets/og.png">
+<link rel="alternate" type="application/atom+xml" title="Vibe Garage" href="https://vibegarage.neozonesproductions.com/feed.xml">
+<link rel="icon" href="/assets/icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/assets/icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css?v=f3e88727c7">
+<script src="/assets/config.js?v=8308d6b9ce" defer></script><script src="/assets/data.js?v=555583636d" defer></script><script src="/assets/icons.js?v=640b2ecfb3" defer></script><script src="/assets/art.js?v=73de6f5daf" defer></script><script src="/assets/native.js?v=b530204329" defer></script><script src="/assets/app.js?v=1fa4dee2ed" defer></script><script src="/assets/guide.js?v=9476f4b7f2" defer></script>
+<style>.doc a.btn{text-decoration:none}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Spark Swarm Episode 6: Ouch","description":"Free Godot 4.8 project files for Spark Swarm Episode 6, Ouch. Give the spark 100 health, let a crab&#x27;s touch cost ten of it, and fix the hug that lands sixty hits a second with a mercy cooldown and a knockback.","url":"https://vibegarage.neozonesproductions.com/spark-swarm/ep06.html","inLanguage":"en","isPartOf":{"@type":"CreativeWorkSeries","name":"Spark Swarm","url":"https://vibegarage.neozonesproductions.com/spark-swarm/"},"datePublished":"2026-11-24","learningResourceType":"Project files","educationalLevel":"Beginner","license":"https://opensource.org/licenses/MIT"}</script>
+</head>
+<body data-page="guide">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="bar"><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a>
+<nav class="main" id="site-nav"><a href="/index.html">Home</a><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html" class="on">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a><a class="btn sm nav-cta" href="/submit.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /> <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /> <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg> Submit</a></nav>
+<div class="bar-tools"><button type="button" class="icon-btn" id="search-open" aria-label="Search" aria-keyshortcuts="/" aria-expanded="false" aria-controls="search-modal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></button><a class="btn ghost sm" id="account-link" href="/account.html">Sign in</a><button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme"><svg class="ico theme-to-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="M4.93 4.93l1.41 1.41" /> <path d="M17.66 17.66l1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="M6.34 17.66l-1.41 1.41" /> <path d="M19.07 4.93l-1.41 1.41" /></svg><svg class="ico theme-to-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button><button type="button" class="burger" aria-label="Menu" aria-controls="site-nav" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12" /> <line x1="4" x2="20" y1="6" y2="6" /> <line x1="4" x2="20" y1="18" y2="18" /></svg></button></div></div></header>
+<main id="main"><div class="wrap"><div class="page-head guide-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Spark Swarm</a><h1>Episode 6: Ouch</h1><p class="guide-meta"><em>Spark Swarm &middot; Godot 4.8 beta 1 &middot; airs Tue Nov 24, 2026</em></p><div class="tags"><span class="tag">#godot</span><span class="tag">#gdscript</span><span class="tag">#beginner</span><span class="tag">#spark-swarm</span></div></div>
+<div class="guide-layout"><nav class="panel toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#watch">Watch</a></li><li><a href="#get-the-project">Get the project</a></li><li><a href="#what-you-build">What you build</a></li><li><a href="#run-it">Run it</a></li><li><a href="#make-it-yours">Make it yours</a></li><li><a href="#how-its-made">How it's made</a></li></ul></nav>
+<article class="doc">
+<p>Episode 5 gave your crabs rhythm: waves, a break to breathe in, a banner that calls each one. But a crab that reaches the spark just hugs it — and a game where nothing can hurt you has no tension, because no mistake ever costs anything. This episode gives the swarm teeth: health for the spark, ten health per touch, and the fix for the hug that lands sixty hits in one second.</p>
+<figure class="diagram"><img src="/spark-swarm/img/ep06.webp" width="1200" height="676" alt="Episode 6 gameplay: the WAVE 4 banner over the dark arena, the yellow spark&#x27;s health counter at 90 as a red crab closes in" loading="eager"><figcaption>A frame from the finished Episode 6 build.</figcaption></figure>
+<h2 id="watch">Watch</h2>
+<p><a class="btn" href="https://www.youtube.com/watch?v=3FO8w9vH4L4" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg> Watch Episode 6 on YouTube</a> <a class="btn ghost" href="https://www.youtube.com/playlist?list=PLSZThGGbiCo0" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h.01" /> <path d="M3 18h.01" /> <path d="M3 6h.01" /> <path d="M8 12h13" /> <path d="M8 18h13" /> <path d="M8 6h13" /></svg> Full playlist</a></p><p class="muted">&ldquo;Godot 4.8 for Beginners: Give Your Crabs Teeth&rdquo; &middot; 7:46 &middot; airs Tue Nov 24, 2026</p>
+<h2 id="get-the-project">Get the project (free)</h2>
+<p>The complete Godot project as it stands at the end of Episode 6. Open it and press Play.</p>
+<p><a class="btn" href="/spark-swarm/ep06.zip" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> <path d="M12 15V3" /></svg> Download ep06.zip</a></p>
+<p class="muted">Code is MIT, so use it in your own games. The sprite art is simple placeholder art made for this series.</p>
+<h2 id="what-you-build">What you build</h2>
+<ol>
+<li>Give the spark health: a <code>health_changed</code> signal, Max Health 100 set in <code>_ready</code>, and <code>take_damage</code> — subtract, clamp at zero, and shout the new number on the signal.</li>
+<li>Show the hit: a red flash. The sprite blinks red and settles back over a quarter of a second on a tween. No hit sound — the sound is saved for a later episode.</li>
+<li>Let the crab call it: the crab gets Damage 10 and a touch check after <code>move_and_slide</code>. When a slide collision&#x27;s other body is the spark, the crab calls <code>take_damage</code>.</li>
+<li>Watch one hug empty the bar: a slide collision is a report, not an event. A crab that stays touching re-fires the check every physics step — 10 × 60 = 600 damage a second, and 100 health is gone in ten frames.</li>
+<li>Add the mercy rule: a 0.5-second hit cooldown on the spark. <code>take_damage</code> returns false while it runs and true when a hit lands, so at most two hits a second (20 damage) get through — and the whole swarm shares that one speed limit.</li>
+<li>Knock back on a landed hit only: because <code>take_damage</code> reports whether the hit counted, the crab bounces off only when it actually hurt you.</li>
+<li>Run the waves and count: waves 1 to 3 with hits landing — 100, then 90, then 70, then 40 — and the breaks turn into health-counting time.</li>
+</ol>
+<h3>One touch, one hit (spark.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>signal health_changed(new_health: int)
+
+## Health the spark starts with. Ten clean crab hits empty it.
+@export var max_health: int = 100
+## Seconds after a landed hit during which the spark can&#x27;t be hurt
+## again. This cooldown belongs to the spark, not to any one crab,
+## so a whole swarm shares the same speed limit.
+@export var hit_cooldown: float = 0.5
+
+var health: int
+var _hit_left: float = 0.0
+
+
+func _ready() -&gt; void:
+	health = max_health
+
+
+## Something hurt the spark. Returns true when the hit counted, so
+## the attacker knows it connected (the crab bounces off only then).
+## While the mercy cooldown is still running, the hit is ignored:
+## a touch that stays touching does not keep paying out.
+func take_damage(amount: int) -&gt; bool:
+	if _hit_left &gt; 0.0:
+		return false
+	_hit_left = hit_cooldown
+	health = clampi(health - amount, 0, max_health)
+	health_changed.emit(health)
+	_flash_damage()
+	return true</code></pre></div>
+<h3>What&#x27;s in the folder</h3>
+<ul>
+<li><code>spark.gd</code>: the movement and zap from Episodes 1–5, plus health, <code>take_damage</code> and the damage flash (new in this episode)</li>
+<li><code>crab.gd</code>: the chase, plus Damage 10, the slide-collision touch check and the knockback (new in this episode)</li>
+<li><code>wave_spawner.gd</code> and <code>wave_banner.gd</code>: Episode 5&#x27;s wave system, unchanged</li>
+<li><code>arena.tscn</code>, <code>spark.tscn</code> and <code>crab.tscn</code>: the scenes, with the spark&#x27;s new health settings in the Inspector</li>
+</ul>
+<h2 id="run-it">Run it</h2>
+<ol>
+<li>Install <a href="https://godotengine.org/download/archive/4.8-beta1/" target="_blank" rel="noopener noreferrer">Godot 4.8 beta 1</a> (the standard build).</li>
+<li>Unzip <code>ep06.zip</code>.</li>
+<li>In Godot&#x27;s Project Manager, click <strong>Import</strong> and pick <code>project.godot</code> inside the <code>spark-swarm-ep06</code> folder.</li>
+<li>Press <strong>Play</strong> (F5). Move with WASD, the arrow keys or a gamepad. Zap with Space or the bottom face button.</li>
+</ol>
+<blockquote class="callout"><p><strong>One honest limit:</strong> health can sit at zero and nothing happens. The spark keeps zapping at 0 — there is no game over yet. Ending the run is Episode 7&#x27;s job. The bonk is silent, too: the hit sound is saved for a later episode.</p></blockquote>
+<h2 id="make-it-yours">
+<p>Set crab damage to 20 and predict the run before you play: how many hits empty a full bar? (Five: 100 ÷ 20.) Then decide what a hit should cost in your game, and set your own numbers.</p>
+<p>Then show us. Share a clip or a screenshot of your version, tell us what you changed, and see what everyone else built.</p>
+<p><!-- POST-YOUR-VERSION: Discussion not created yet. When it exists, set data-discussion to its number and href to /thread.html?id=gh-NUMBER --><a class="btn" id="post-your-version" data-discussion="" href="https://github.com/vibe-garage/vibe-garage/discussions/categories/show-and-tell" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 0 0 4 16.1L2 22Z" /></svg> Post your version</a></p>
+<h2 id="how-its-made">How it&#x27;s made</h2>
+<p><strong>How this series is made:</strong> Lexi Volt&#x27;s narration voice is AI-generated, and the scripts, the music and the project code were written with AI tools. Every project is then built, run and tested in the real Godot 4.8 beta 1 editor, and the files here match the code shown in the video. The sprite art is simple placeholder art made for this series.</p>
+<p class="doc-back"><a class="btn ghost sm" href="/spark-swarm/ep05.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Episode 5</a> <span class="tag">Next: Episode 7, Game Over</span></p>
+</article></div><p class="doc doc-back"><a class="btn ghost sm" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> All Spark Swarm episodes</a></p><p class="sr-only" aria-live="polite" id="copy-status"></p></div></main>
+
+<footer><div class="wrap"><div class="loop"><div><h2>Stay in the loop</h2><p>Forum threads land in the Atom feed. You can also follow them in Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="/feed.xml">Atom feed</a><a class="btn ghost sm" href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div></div><div class="cols">
+<div><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a><p style="max-width:340px">A cozy late-night hangout for people who build with AI. Half-finished is welcome here.</p></div>
+<div><h4>Explore</h4><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a></div>
+<div><h4>Share</h4><a href="/submit.html">Submit a project</a><a href="/forum.html">Start a thread</a><a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></div>
+<div><h4>Community</h4><a href="/guidelines.html">Community guidelines</a><a href="/guidelines.html#report">Report something</a><a href="/guidelines.html#mods">Moderation</a></div></div>
+<div class="fine"><span>© 2026 Vibe Garage · forum runs on <a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></span><span>Icons: <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide</a> (ISC) · Fonts: Google Fonts (OFL) · Cover art generated in-browser</span></div></div></footer>
+<script>(function(){try{if(navigator.webdriver)return;fetch("/api/hit",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({p:location.pathname,s:location.search,r:document.referrer})}).catch(function(){})}catch(e){}})()</script></body></html>

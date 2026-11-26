@@ -1,0 +1,183 @@
+<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0f17">
+<script>
+(function(){try{var k="vg-theme",t=localStorage.getItem(k);if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",document.documentElement.getAttribute("data-theme")==="light"?"#f4f7fb":"#0a0f17");})();
+</script>
+<title>Spark Swarm Episode 5: Waves · Vibe Garage</title><meta name="description" content="Free Godot 4.8 project files for Spark Swarm Episode 5, Waves. Turn Episode 4's endless crab flood into waves: a count per wave, a gap between crabs, a real break, and a banner that calls each wave.">
+<link rel="canonical" href="https://vibegarage.neozonesproductions.com/spark-swarm/ep05.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Vibe Garage">
+<meta property="og:title" content="Spark Swarm Episode 5: Waves · Vibe Garage"><meta property="og:description" content="Free Godot 4.8 project files for Spark Swarm Episode 5, Waves. Turn Episode 4's endless crab flood into waves: a count per wave, a gap between crabs, a real break, and a banner that calls each wave.">
+<meta property="og:url" content="https://vibegarage.neozonesproductions.com/spark-swarm/ep05.html">
+<meta property="og:image" content="https://vibegarage.neozonesproductions.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Vibe Garage">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Spark Swarm Episode 5: Waves · Vibe Garage"><meta name="twitter:description" content="Free Godot 4.8 project files for Spark Swarm Episode 5, Waves. Turn Episode 4's endless crab flood into waves: a count per wave, a gap between crabs, a real break, and a banner that calls each wave."><meta name="twitter:image" content="https://vibegarage.neozonesproductions.com/assets/og.png">
+<link rel="alternate" type="application/atom+xml" title="Vibe Garage" href="https://vibegarage.neozonesproductions.com/feed.xml">
+<link rel="icon" href="/assets/icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/assets/icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css?v=f3e88727c7">
+<script src="/assets/config.js?v=8308d6b9ce" defer></script><script src="/assets/data.js?v=555583636d" defer></script><script src="/assets/icons.js?v=640b2ecfb3" defer></script><script src="/assets/art.js?v=73de6f5daf" defer></script><script src="/assets/native.js?v=b530204329" defer></script><script src="/assets/app.js?v=1fa4dee2ed" defer></script><script src="/assets/guide.js?v=9476f4b7f2" defer></script>
+<style>.doc a.btn{text-decoration:none}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Spark Swarm Episode 5: Waves","description":"Free Godot 4.8 project files for Spark Swarm Episode 5, Waves. Turn Episode 4's endless crab flood into waves: a count per wave, a gap between crabs, a real break, and a banner that calls each wave.","url":"https://vibegarage.neozonesproductions.com/spark-swarm/ep05.html","inLanguage":"en","isPartOf":{"@type":"CreativeWorkSeries","name":"Spark Swarm","url":"https://vibegarage.neozonesproductions.com/spark-swarm/"},"datePublished":"2026-11-23","learningResourceType":"Project files","educationalLevel":"Beginner","license":"https://opensource.org/licenses/MIT"}</script>
+</head>
+<body data-page="guide">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="bar"><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a>
+<nav class="main" id="site-nav"><a href="/index.html">Home</a><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html" class="on">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a><a class="btn sm nav-cta" href="/submit.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /> <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /> <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg> Submit</a></nav>
+<div class="bar-tools"><button type="button" class="icon-btn" id="search-open" aria-label="Search" aria-keyshortcuts="/" aria-expanded="false" aria-controls="search-modal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></button><a class="btn ghost sm" id="account-link" href="/account.html">Sign in</a><button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme"><svg class="ico theme-to-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="M4.93 4.93l1.41 1.41" /> <path d="M17.66 17.66l1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="M6.34 17.66l-1.41 1.41" /> <path d="M19.07 4.93l-1.41 1.41" /></svg><svg class="ico theme-to-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button><button type="button" class="burger" aria-label="Menu" aria-controls="site-nav" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12" /> <line x1="4" x2="20" y1="6" y2="6" /> <line x1="4" x2="20" y1="18" y2="18" /></svg></button></div></div></header>
+<main id="main"><div class="wrap"><div class="page-head guide-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Spark Swarm</a><h1>Episode 5: Waves</h1><p class="guide-meta"><em>Spark Swarm &middot; Godot 4.8 beta 1 &middot; airs Mon Nov 23, 2026</em></p><div class="tags"><span class="tag">#godot</span><span class="tag">#gdscript</span><span class="tag">#beginner</span><span class="tag">#spark-swarm</span></div></div>
+<div class="guide-layout"><nav class="panel toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#watch">Watch</a></li><li><a href="#get-the-project">Get the project</a></li><li><a href="#what-you-build">What you build</a></li><li><a href="#run-it">Run it</a></li><li><a href="#make-it-yours">Make it yours</a></li><li><a href="#how-its-made">How it's made</a></li></ul></nav>
+<article class="doc">
+<p>Episode 4's crabs never stopped: one crab every second, forever, no breaks and no mercy. This episode tames that flood into waves — four crabs, a breath, six crabs, a breath, eight — with a banner that calls each wave before it lands.</p>
+<figure class="diagram"><img src="/spark-swarm/img/ep05.webp" width="1200" height="676" alt="Episode 5 gameplay: the WAVE 3 banner over the arena as the yellow spark waits for the next wave" loading="eager"><figcaption>A frame from the finished Episode 5 build.</figcaption></figure>
+<h2 id="watch">Watch</h2>
+<p><a class="btn" href="https://www.youtube.com/watch?v=BcusiNoGYpU" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg> Watch Episode 5 on YouTube</a> <a class="btn ghost" href="https://www.youtube.com/playlist?list=PLSZThGGbiCo0" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h.01" /> <path d="M3 18h.01" /> <path d="M3 6h.01" /> <path d="M8 12h13" /> <path d="M8 18h13" /> <path d="M8 6h13" /></svg> Full playlist</a></p><p class="muted">&ldquo;Godot 4.8 for Beginners: Give Your Swarm a Heartbeat&rdquo; &middot; 8:09 &middot; airs Mon Nov 23, 2026</p>
+<h2 id="get-the-project">Get the project (free)</h2>
+<p>The complete Godot project as it stands at the end of Episode 5. Open it and press Play.</p>
+<p><a class="btn" href="/spark-swarm/ep05.zip" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> <path d="M12 15V3" /></svg> Download ep05.zip</a></p>
+<p class="muted">Code is MIT, so use it in your own games. The sprite art is simple placeholder art made for this series.</p>
+<h2 id="what-you-build">What you build</h2>
+<ol>
+<li>Demote the old timer: in Episode 4's spawner, set the SpawnTimer's One Shot property to on. It still ticks inside a wave, but it no longer runs the show — a one-shot timer pours exactly one wave instead of running like a faucet.</li>
+<li>Add a second timer: a BreakTimer child, also one-shot. It owns the quiet between waves. Two timers, two jobs: one paces crabs inside a wave, one paces the waves themselves.</li>
+<li>Set the four numbers: First Wave Size 4, Wave Growth 2, Spawn Gap 0.9 seconds, Break Length 4 seconds. Those four settings are the whole personality of your waves.</li>
+<li>Count the wave: one small function, <code>crabs_in_wave</code>, turns a wave number into a count — 4, then 6, then 8. The spawner counts down what it still owes, and the first crab of each wave arrives right away.</li>
+<li>Know when it's over: each crab's <code>tree_exited</code> signal tells the spawner a crab left the game. The wave is cleared when nothing is left to spawn and the enemies group is empty — ask the group, never trust the crab that left.</li>
+<li>Call the wave: a Label on a CanvasLayer listens for the spawner's <code>wave_started</code> and <code>wave_cleared</code> signals, shows WAVE 1, WAVE 2, CLEARED, and fades each one out over two seconds.</li>
+</ol>
+<h3>The wave spawner (wave_spawner.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>extends Node2D
+## WaveSpawner — Spark Swarm Episode 5 (&quot;Waves&quot;).
+##
+## Replaces Episode 4&#x27;s free-running SpawnTimer: instead of one crab every
+## second forever, crabs now arrive in waves. Each wave has a set count,
+## a short break follows, and the next wave is bigger.
+##
+## Scene setup (built in the episode):
+##   WaveSpawner (Node2D, this script)
+##   ├── SpawnTimer (Timer, one_shot = true)  -&gt; timeout -&gt; _on_spawn_timer_timeout
+##   └── BreakTimer (Timer, one_shot = true)  -&gt; timeout -&gt; _on_break_timer_timeout
+## The crab scene and the arena are exported vars, set in the Inspector.
+
+signal wave_started(wave_number: int, crab_count: int)
+signal wave_cleared(wave_number: int)
+
+## The crab scene, copied once per spawn (Episode 3/4).
+@export var crab_scene: PackedScene
+## The arena node new crabs are added to, so they live in the world,
+## not inside the spawner. (NodePath export: node exports assigned in
+## a .tscn need the NodePath form to resolve.)
+@export var arena: NodePath
+
+## Crabs in wave 1.
+@export var first_wave_size: int = 4
+## Extra crabs each new wave adds.
+@export var wave_growth: int = 2
+## Seconds between crabs inside one wave.
+@export var spawn_gap: float = 0.9
+## Seconds of quiet between waves.
+@export var break_length: float = 4.0
+
+var wave_number: int = 0
+var _to_spawn: int = 0  # crabs still owed by the current wave
+
+@onready var _spawn_timer: Timer = $SpawnTimer
+@onready var _break_timer: Timer = $BreakTimer
+
+
+func _ready() -&gt; void:
+	# The first wave gets the same short break, so the player sees the
+	# arena and the WAVE 1 banner before the first crab walks in.
+	_break_timer.start(break_length)
+
+
+## How many crabs a wave sends. Wave 1: 4, wave 2: 6, wave 3: 8.
+func crabs_in_wave(wave: int) -&gt; int:
+	return first_wave_size + (wave - 1) * wave_growth
+
+
+## Seconds one wave&#x27;s spawning takes: the first crab is instant,
+## every crab after it waits one gap. Wave 1: 3 x 0.9 = 2.7 s.
+func spawn_span(wave: int) -&gt; float:
+	return (crabs_in_wave(wave) - 1) * spawn_gap
+
+
+func _on_break_timer_timeout() -&gt; void:
+	_start_wave()
+
+
+func _start_wave() -&gt; void:
+	wave_number += 1
+	_to_spawn = crabs_in_wave(wave_number)
+	wave_started.emit(wave_number, _to_spawn)
+	_spawn_crab()  # the first crab of the wave arrives right away
+	if _to_spawn &gt; 0:
+		_spawn_timer.start(spawn_gap)
+
+
+func _on_spawn_timer_timeout() -&gt; void:
+	_spawn_crab()
+	if _to_spawn &gt; 0:
+		_spawn_timer.start(spawn_gap)
+
+
+func _spawn_crab() -&gt; void:
+	var crab: Node2D = crab_scene.instantiate()
+	crab.position = _spawn_point()
+	get_node(arena).add_child(crab)
+	# tree_exited fires when the crab leaves the tree (it died),
+	# which is the spawner&#x27;s cue to check whether the wave is over.
+	crab.tree_exited.connect(_on_crab_gone)
+	_to_spawn -= 1
+
+
+func _on_crab_gone() -&gt; void:
+	# A wave is cleared when nothing is left to spawn AND no crab
+	# from the group is still alive in the arena.
+	if _to_spawn == 0 and get_tree().get_nodes_in_group(&quot;enemies&quot;).is_empty():
+		wave_cleared.emit(wave_number)
+		_break_timer.start(break_length)
+
+
+## A point just outside a random edge of the arena (Episode 4&#x27;s rule:
+## crabs walk in from off screen, from any edge).
+func _spawn_point() -&gt; Vector2:
+	var rect := Rect2(Vector2(64, 64), Vector2(1024, 520))
+	var margin := 48.0
+	var edge := randi() % 4
+	match edge:
+		0:  # top
+			return Vector2(randf_range(rect.position.x, rect.end.x), rect.position.y - margin)
+		1:  # bottom
+			return Vector2(randf_range(rect.position.x, rect.end.x), rect.end.y + margin)
+		2:  # left
+			return Vector2(rect.position.x - margin, randf_range(rect.position.y, rect.end.y))
+		_:  # right
+			return Vector2(rect.end.x + margin, randf_range(rect.position.y, rect.end.y))</code></pre></div>
+<h2 id="run-it">Run it</h2>
+<ol>
+<li>Install <a href="https://godotengine.org/download/archive/4.8-beta1/" target="_blank" rel="noopener noreferrer">Godot 4.8 beta 1</a> (the standard build).</li>
+<li>Unzip <code>ep05.zip</code>.</li>
+<li>In Godot&#x27;s Project Manager, click <strong>Import</strong> and pick <code>project.godot</code> inside the <code>spark-swarm-ep05</code> folder.</li>
+<li>Press <strong>Play</strong> (F5). Move with WASD, the arrow keys or a gamepad. Zap with Space or the bottom face button.</li>
+</ol>
+<blockquote class="callout"><p><strong>One honest limit:</strong> There is no cap and no game over yet. The count grows by two every wave, so wave 10 sends 22 crabs at once — and with no health, a wave you can't clear just piles up. Losing arrives in Episode 7.</p></blockquote>
+<h2 id="make-it-yours">Make it yours</h2>
+<p>Set First Wave Size to 5 and Wave Growth to 3, and predict wave 3 before you run it. (It is 11: five, plus two waves of three.) Then find the growth your arena can survive, and set your own.</p>
+<p>Then show us. Share a clip or a screenshot of your version, tell us what you changed, and see what everyone else built.</p>
+<p><!-- POST-YOUR-VERSION: Discussion not created yet. When it exists, set data-discussion to its number and href to /thread.html?id=gh-NUMBER --><a class="btn" id="post-your-version" data-discussion="" href="https://github.com/vibe-garage/vibe-garage/discussions/categories/show-and-tell" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 0 0 4 16.1L2 22Z" /></svg> Post your version</a></p>
+<h2 id="how-its-made">How it&#x27;s made</h2>
+<p><strong>How this series is made:</strong> Lexi Volt&#x27;s narration voice is AI-generated, and the scripts, the music and the project code were written with AI tools. Every project is then built, run and tested in the real Godot 4.8 beta 1 editor, and the files here match the code shown in the video. The sprite art is simple placeholder art made for this series.</p>
+<p class="doc-back"><a class="btn ghost sm" href="/spark-swarm/ep04.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Episode 4</a> <span class="tag">Next: Episode 6, Ouch</span></p>
+</article></div><p class="doc doc-back"><a class="btn ghost sm" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> All Spark Swarm episodes</a></p><p class="sr-only" aria-live="polite" id="copy-status"></p></div></main>
+
+<footer><div class="wrap"><div class="loop"><div><h2>Stay in the loop</h2><p>Forum threads land in the Atom feed. You can also follow them in Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="/feed.xml">Atom feed</a><a class="btn ghost sm" href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div></div><div class="cols">
+<div><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a><p style="max-width:340px">A cozy late-night hangout for people who build with AI. Half-finished is welcome here.</p></div>
+<div><h4>Explore</h4><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a></div>
+<div><h4>Share</h4><a href="/submit.html">Submit a project</a><a href="/forum.html">Start a thread</a><a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></div>
+<div><h4>Community</h4><a href="/guidelines.html">Community guidelines</a><a href="/guidelines.html#report">Report something</a><a href="/guidelines.html#mods">Moderation</a></div></div>
+<div class="fine"><span>© 2026 Vibe Garage · forum runs on <a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></span><span>Icons: <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide</a> (ISC) · Fonts: Google Fonts (OFL) · Cover art generated in-browser</span></div></div></footer>
+<script>(function(){try{if(navigator.webdriver)return;fetch("/api/hit",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({p:location.pathname,s:location.search,r:document.referrer})}).catch(function(){})}catch(e){}})()</script></body></html>

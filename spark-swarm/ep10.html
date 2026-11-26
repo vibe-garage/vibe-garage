@@ -1,0 +1,520 @@
+<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0f17">
+<script>
+(function(){try{var k="vg-theme",t=localStorage.getItem(k);if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",document.documentElement.getAttribute("data-theme")==="light"?"#f4f7fb":"#0a0f17");})();
+</script>
+<title>Spark Swarm Episode 10: Level Up · Vibe Garage</title><meta name="description" content="Free Godot 4.8 project files for Spark Swarm Episode 10, Level Up. Every grabbed gem pays XP toward a rising price (5, 7, 9), the level-up heals the spark for 20, the HUD shows the climb — and the tree_exited trap that levels you up for dying gets fixed.">
+<link rel="canonical" href="https://vibegarage.neozonesproductions.com/spark-swarm/ep10.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Vibe Garage">
+<meta property="og:title" content="Spark Swarm Episode 10: Level Up · Vibe Garage"><meta property="og:description" content="Free Godot 4.8 project files for Spark Swarm Episode 10, Level Up. Every grabbed gem pays XP toward a rising price (5, 7, 9), the level-up heals the spark for 20, the HUD shows the climb — and the tree_exited trap that levels you up for dying gets fixed.">
+<meta property="og:url" content="https://vibegarage.neozonesproductions.com/spark-swarm/ep10.html">
+<meta property="og:image" content="https://vibegarage.neozonesproductions.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Vibe Garage">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Spark Swarm Episode 10: Level Up · Vibe Garage"><meta name="twitter:description" content="Free Godot 4.8 project files for Spark Swarm Episode 10, Level Up. Every grabbed gem pays XP toward a rising price (5, 7, 9), the level-up heals the spark for 20, the HUD shows the climb — and the tree_exited trap that levels you up for dying gets fixed."><meta name="twitter:image" content="https://vibegarage.neozonesproductions.com/assets/og.png">
+<link rel="alternate" type="application/atom+xml" title="Vibe Garage" href="https://vibegarage.neozonesproductions.com/feed.xml">
+<link rel="icon" href="/assets/icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/assets/icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css?v=f3e88727c7">
+<script src="/assets/config.js?v=8308d6b9ce" defer></script><script src="/assets/data.js?v=555583636d" defer></script><script src="/assets/icons.js?v=640b2ecfb3" defer></script><script src="/assets/art.js?v=73de6f5daf" defer></script><script src="/assets/native.js?v=b530204329" defer></script><script src="/assets/app.js?v=1fa4dee2ed" defer></script><script src="/assets/guide.js?v=9476f4b7f2" defer></script>
+<style>.doc a.btn{text-decoration:none}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Spark Swarm Episode 10: Level Up","description":"Free Godot 4.8 project files for Spark Swarm Episode 10, Level Up. Every grabbed gem pays XP toward a rising price (5, 7, 9), the level-up heals the spark for 20, the HUD shows the climb — and the tree_exited trap that levels you up for dying gets fixed.","url":"https://vibegarage.neozonesproductions.com/spark-swarm/ep10.html","inLanguage":"en","isPartOf":{"@type":"CreativeWorkSeries","name":"Spark Swarm","url":"https://vibegarage.neozonesproductions.com/spark-swarm/"},"datePublished":"2026-11-28","learningResourceType":"Project files","educationalLevel":"Beginner","license":"https://opensource.org/licenses/MIT"}</script>
+</head>
+<body data-page="guide">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="bar"><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a>
+<nav class="main" id="site-nav"><a href="/index.html">Home</a><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html" class="on">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a><a class="btn sm nav-cta" href="/submit.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /> <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /> <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg> Submit</a></nav>
+<div class="bar-tools"><button type="button" class="icon-btn" id="search-open" aria-label="Search" aria-keyshortcuts="/" aria-expanded="false" aria-controls="search-modal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></button><a class="btn ghost sm" id="account-link" href="/account.html">Sign in</a><button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme"><svg class="ico theme-to-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="M4.93 4.93l1.41 1.41" /> <path d="M17.66 17.66l1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="M6.34 17.66l-1.41 1.41" /> <path d="M19.07 4.93l-1.41 1.41" /></svg><svg class="ico theme-to-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg></button><button type="button" class="burger" aria-label="Menu" aria-controls="site-nav" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12" /> <line x1="4" x2="20" y1="6" y2="6" /> <line x1="4" x2="20" y1="18" y2="18" /></svg></button></div></div></header>
+<main id="main"><div class="wrap"><div class="page-head guide-head"><div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div><a class="kicker" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Spark Swarm</a><h1>Episode 10: Level Up</h1><p class="guide-meta"><em>Spark Swarm &middot; Godot 4.8 beta 1 &middot; airs Sat Nov 28, 2026</em></p><div class="tags"><span class="tag">#godot</span><span class="tag">#gdscript</span><span class="tag">#beginner</span><span class="tag">#spark-swarm</span></div></div>
+<div class="guide-layout"><nav class="panel toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#watch">Watch</a></li><li><a href="#get-the-project">Get the project</a></li><li><a href="#what-you-build">What you build</a></li><li><a href="#run-it">Run it</a></li><li><a href="#make-it-yours">Make it yours</a></li><li><a href="#how-its-made">How it's made</a></li></ul></nav>
+<article class="doc">
+<p>Episode 9 taught the score to count. But points are bragging — they don&rsquo;t change the run. This episode gives every gem a second job: XP. Grabs fill a bar, the bar buys levels, and every level hands the spark twenty health back, mid-fight. One warning: the first version of this system pays you for dying. We fix that too.</p>
+<figure class="diagram"><img src="/spark-swarm/img/ep10.webp" width="1280" height="720" alt="Episode 10 gameplay: the spark the moment it reaches LV 2, gems waiting on the arena floor" loading="eager"><figcaption>A frame from the finished Episode 10 build: the level-up, caught live.</figcaption></figure>
+<h2 id="watch">Watch</h2>
+<p><a class="btn" href="https://www.youtube.com/watch?v=eL7v1MsAjG0" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg> Watch Episode 10 on YouTube</a> <a class="btn ghost" href="https://www.youtube.com/playlist?list=PLSZThGGbiCo0" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h.01" /> <path d="M3 18h.01" /> <path d="M3 6h.01" /> <path d="M8 12h13" /> <path d="M8 18h13" /> <path d="M8 6h13" /></svg> Full playlist</a></p><p class="muted">&ldquo;Godot 4.8 for Beginners: Turn Gems Into Levels&rdquo; &middot; airs Sat Nov 28, 2026</p>
+<h2 id="get-the-project">Get the project (free)</h2>
+<p>The complete Godot project as it stands at the end of Episode 10. Open it and press Play.</p>
+<p><a class="btn" href="/spark-swarm/ep10.zip" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> <path d="M12 15V3" /></svg> Download ep10.zip</a></p>
+<p class="muted">Code is MIT, so use it in your own games. All the game art is by Kenney — &ldquo;Platformer Pack Remastered&rdquo; (CC0); see CREDITS.md in the zip.</p>
+<h2 id="what-you-build">What you build</h2>
+<ol>
+<li>Give the spawner two more numbers: next to the score, it now owns <code>xp</code> and <code>level</code> (<code>wave_spawner.gd</code> below). One owner for the run&rsquo;s books — Episode 8&rsquo;s lesson, applied to growth.</li>
+<li>Price the levels with a formula, not a table: <code>xp_needed(level) = 5 + (level - 1) x 2</code>. Level 2 costs 5, level 3 costs 7 more, level 4 costs 9 more — and level 40 still works. XP left over after a level carries across the threshold; nothing is wasted.</li>
+<li>Count XP in the gem&rsquo;s <code>collected</code> handler — and nowhere else. The first version hung XP on <code>tree_exited</code>, which fires for ANY exit: grabs, despawns, and the game-over restart sweeping gems off the floor. Two honest grabs plus three swept gems is five — the price of level 2, paid for dying. <strong>Count the grab, not the goodbye.</strong></li>
+<li>Pay the level: crossing the price shouts <code>level_up</code>, and the spark hears its name (<code>spark.gd</code> below) — health goes up by the Level Heal export (20), clamped at max health, and a dead spark stays dead.</li>
+<li>Show the climb: a LevelLabel in the HUD (<code>level_label.gd</code> below) listens to <code>xp_changed</code> and prints the level and progress — LV 1 &middot; XP 3/5 — popping a little when the level changes. Like Episode 8&rsquo;s labels, it asks the spawner for the starting state, so it is never blank or wrong.</li>
+</ol>
+<h3>The wave spawner, with XP (wave_spawner.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>extends Node2D
+## WaveSpawner — Spark Swarm Episode 10 (&quot;Level Up&quot;).
+##
+## Ep5&#x27;s wave spawner + Ep8&#x27;s wave_progress + Ep9&#x27;s loot and score,
+## plus Ep10&#x27;s growth: every collected gem also pays XP, XP fills
+## the current level&#x27;s price, and a filled price levels the spark
+## up. The spawner owns the numbers and shouts the changes
+## (xp_changed / level_up); the HUD label and the spark&#x27;s heal
+## listen. Levels live here, so a restart resets them with the
+## score — Ep10&#x27;s honest limit; saving is a later episode&#x27;s job.
+##
+## Scene setup (unchanged from Ep5, plus the gem scene export):
+##   WaveSpawner (Node2D, this script, in the &quot;spawner&quot; group)
+##   ├── SpawnTimer (Timer, one_shot = true)  -&gt; timeout -&gt; _on_spawn_timer_timeout
+##   └── BreakTimer (Timer, one_shot = true)  -&gt; timeout -&gt; _on_break_timer_timeout
+## The crab scene, gem scene and arena are exported vars, set in
+## the Inspector.
+
+signal wave_started(wave_number: int, crab_count: int)
+signal wave_cleared(wave_number: int)
+## Ep8: the crabs-left count, announced on every change.
+signal wave_progress(remaining: int)
+## Ep9: shouted every time the score moves; the HUD listens.
+signal score_changed(new_score: int)
+## Ep10: shouted every time XP moves, with the current level&#x27;s
+## price, so the HUD label never has to ask twice.
+signal xp_changed(xp: int, xp_needed_now: int, level: int)
+## Ep10: shouted once per level gained, the moment it happens.
+## The spark listens and patches itself up (spark.gd).
+signal level_up(new_level: int)
+
+## The crab scene, copied once per spawn (Episode 3/4).
+@export var crab_scene: PackedScene
+## The gem scene (Ep9), copied once per winning drop roll.
+@export var gem_scene: PackedScene
+## The arena node new crabs (and dropped gems) are added to, so they
+## live in the world, not inside the spawner. (NodePath export: node
+## exports assigned in a .tscn need the NodePath form to resolve.)
+@export var arena: NodePath
+
+## Crabs in wave 1.
+@export var first_wave_size: int = 4
+## Extra crabs each new wave adds.
+@export var wave_growth: int = 2
+## Seconds between crabs inside one wave.
+@export var spawn_gap: float = 0.9
+## Seconds of quiet between waves.
+@export var break_length: float = 4.0
+## The odds that one kill drops a gem. 0.25 is one in four.
+@export var drop_chance: float = 0.25
+## Points one collected gem is worth (Ep9&#x27;s score).
+@export var gem_value: int = 10
+## XP one collected gem pays (Ep10). Score is the bragging;
+## XP is the growing. Same gem, two pockets.
+@export var xp_per_gem: int = 1
+## XP the first level costs.
+@export var xp_base: int = 5
+## Extra XP each new level adds to its price. Levels get
+## hungrier by two, the way waves get bigger by two.
+@export var xp_growth: int = 2
+
+var wave_number: int = 0
+## The run&#x27;s score (Ep9). Lives here, so a restart resets it.
+var score: int = 0
+## XP banked toward the current level&#x27;s price (Ep10).
+var xp: int = 0
+## The spark&#x27;s current level. Starts at 1.
+var level: int = 1
+var _to_spawn: int = 0  # crabs still owed by the current wave
+
+@onready var _spawn_timer: Timer = $SpawnTimer
+@onready var _break_timer: Timer = $BreakTimer
+
+
+func _ready() -&gt; void:
+	# The first wave gets the same short break, so the player sees the
+	# arena and the WAVE 1 banner before the first crab walks in.
+	_break_timer.start(break_length)
+
+
+## How many crabs a wave sends. Wave 1: 4, wave 2: 6, wave 3: 8.
+func crabs_in_wave(wave: int) -&gt; int:
+	return first_wave_size + (wave - 1) * wave_growth
+
+
+## Seconds one wave&#x27;s spawning takes: the first crab is instant,
+## every crab after it waits one gap. Wave 1: 3 x 0.9 = 2.7 s.
+func spawn_span(wave: int) -&gt; float:
+	return (crabs_in_wave(wave) - 1) * spawn_gap
+
+
+## Crabs the player still has to beat this wave — the ones on
+## screen plus the ones this wave still owes (Episode 8).
+func crabs_remaining() -&gt; int:
+	return _to_spawn + get_tree().get_nodes_in_group(&quot;enemies&quot;).size()
+
+
+## On-average gems for a clear of this many crabs: kills times the
+## chance. Wave 3: 8 x 0.25 = 2. An average, not a promise.
+func expected_gems(crab_count: int) -&gt; float:
+	return crab_count * drop_chance
+
+
+## The price of a level: a base, plus a growth — the wave formula
+## wearing a new hat. Level 1 costs 5, level 2 costs 7, level 3
+## costs 9.
+func xp_needed(for_level: int) -&gt; int:
+	return xp_base + (for_level - 1) * xp_growth
+
+
+## On-average XP for a clear of this many crabs: one XP rides
+## every expected gem. Wave 3: 2 gems, 2 XP.
+func expected_xp(crab_count: int) -&gt; float:
+	return expected_gems(crab_count) * xp_per_gem
+
+
+func _on_break_timer_timeout() -&gt; void:
+	_start_wave()
+
+
+func _start_wave() -&gt; void:
+	wave_number += 1
+	_to_spawn = crabs_in_wave(wave_number)
+	wave_started.emit(wave_number, _to_spawn)
+	wave_progress.emit(crabs_remaining())
+	_spawn_crab()  # the first crab of the wave arrives right away
+	if _to_spawn &gt; 0:
+		_spawn_timer.start(spawn_gap)
+
+
+func _on_spawn_timer_timeout() -&gt; void:
+	_spawn_crab()
+	if _to_spawn &gt; 0:
+		_spawn_timer.start(spawn_gap)
+
+
+func _spawn_crab() -&gt; void:
+	var crab = crab_scene.instantiate()
+	crab.position = _spawn_point()
+	get_node(arena).add_child(crab)
+	# tree_exited fires when the crab leaves the tree (any reason),
+	# which is the spawner&#x27;s cue to check whether the wave is over.
+	crab.tree_exited.connect(_on_crab_gone)
+	# died fires only for a zap kill, and carries the spot where the
+	# crab fell — that&#x27;s the drop roll&#x27;s one hookup. (The crab is
+	# deliberately untyped here: died is the crab script&#x27;s own
+	# signal, not a Node2D one.)
+	crab.died.connect(_on_crab_died)
+	_to_spawn -= 1
+	wave_progress.emit(crabs_remaining())
+
+
+func _on_crab_gone() -&gt; void:
+	# During a scene reload (Ep7), a crab can leave the tree after
+	# the spawner itself has already left it — get_tree() is null
+	# then, and there is no wave left to check. Bail out quietly.
+	if not is_inside_tree():
+		return
+	wave_progress.emit(crabs_remaining())
+	# A wave is cleared when nothing is left to spawn AND no crab
+	# from the group is still alive in the arena.
+	if _to_spawn == 0 and get_tree().get_nodes_in_group(&quot;enemies&quot;).is_empty():
+		wave_cleared.emit(wave_number)
+		_break_timer.start(break_length)
+
+
+## THE DROP ROLL (Ep9). Runs exactly once per kill, because died
+## does. Random rewards roll at the event, never in a loop.
+func _on_crab_died(at_position: Vector2) -&gt; void:
+	if randf() &lt; drop_chance:
+		_drop_gem(at_position)
+
+
+func _drop_gem(at_position: Vector2) -&gt; void:
+	var gem = gem_scene.instantiate()
+	gem.position = at_position
+	get_node(arena).add_child(gem)
+	gem.collected.connect(_on_gem_collected)
+
+
+## A gem was GRABBED — the one moment money and growth are counted.
+## Ep10&#x27;s first version counted XP on the gem&#x27;s tree_exited instead:
+## floor gems &quot;paid&quot; their XP when a restart swept them out of the
+## scene, and the spark leveled up by dying. Count the grab, not
+## the goodbye.
+func _on_gem_collected(_gem: Area2D) -&gt; void:
+	score += gem_value
+	score_changed.emit(score)
+	_gain_xp(xp_per_gem)
+
+
+## Bank XP, then pay level prices while the bank covers them.
+## Leftover XP carries into the next level — no step is wasted.
+func _gain_xp(amount: int) -&gt; void:
+	if amount &lt;= 0:
+		return
+	xp += amount
+	while xp &gt;= xp_needed(level):
+		xp -= xp_needed(level)
+		level += 1
+		level_up.emit(level)
+	xp_changed.emit(xp, xp_needed(level), level)
+
+
+## A point just outside a random edge of the arena (Episode 4&#x27;s rule:
+## crabs walk in from off screen, from any edge).
+func _spawn_point() -&gt; Vector2:
+	var rect := Rect2(Vector2(64, 64), Vector2(1024, 520))
+	var margin := 48.0
+	var edge := randi() % 4
+	match edge:
+		0:  # top
+			return Vector2(randf_range(rect.position.x, rect.end.x), rect.position.y - margin)
+		1:  # bottom
+			return Vector2(randf_range(rect.position.x, rect.end.x), rect.position.y + margin)
+		2:  # left
+			return Vector2(rect.position.x - margin, randf_range(rect.position.y, rect.end.y))
+		_:  # right
+			return Vector2(rect.end.x + margin, randf_range(rect.position.y, rect.end.y))</code></pre></div>
+<h3>The level label (level_label.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>extends Label
+## LevelLabel — Spark Swarm Episode 10 (&quot;Level Up&quot;).
+##
+## One new label in the Ep8 HUD&#x27;s top-left stack, under the score:
+## it shows the spark&#x27;s level and the XP banked toward the next
+## one (&quot;LV 1 · XP 3/5&quot;). Ep9&#x27;s ScoreLabel with new ears — the
+## spawner owns the numbers and shouts xp_changed; this label&#x27;s
+## whole job is: hear the shout, write the truth. On level_up it
+## pops, so the moment catches the player&#x27;s eye.
+##
+## Scene setup: a Label in the HUD&#x27;s CanvasLayer with this script.
+## The spawner is found through the &quot;spawner&quot; group — the same
+## lookup Ep5&#x27;s WaveBanner and Ep9&#x27;s ScoreLabel use.
+
+func _ready() -&gt; void:
+	var spawner := get_tree().get_first_node_in_group(&quot;spawner&quot;)
+	if spawner != null:
+		spawner.xp_changed.connect(_on_xp_changed)
+		spawner.level_up.connect(_on_level_up)
+		# Signals only announce changes, and nothing has changed
+		# yet: ask for the starting state, once (the Ep8 HUD rule).
+		_on_xp_changed(spawner.xp, spawner.xp_needed(spawner.level), spawner.level)
+
+
+func _on_xp_changed(xp_now: int, xp_price: int, level_now: int) -&gt; void:
+	text = &quot;LV %d · XP %d/%d&quot; % [level_now, xp_now, xp_price]
+
+
+func _on_level_up(_new_level: int) -&gt; void:
+	# A quick scale bounce around the label&#x27;s centre, then settle.
+	pivot_offset = size * 0.5
+	scale = Vector2(1.35, 1.35)
+	var tw := create_tween()
+	tw.tween_property(self, &quot;scale&quot;, Vector2.ONE, 0.25)</code></pre></div>
+<h3>The spark, with the level-up heal (spark.gd)</h3>
+<div class="code-wrap"><pre class="code" data-lang="gdscript"><code>extends CharacterBody2D
+## Spark — the player (Episodes 1 + 3 + 6 + 7, series build;
+## Ep10 adds the level-up heal).
+## Eased movement (Ep1), fence clamp to the floor (Ep1), auto-aim zap
+## that damages the nearest crab in range (Ep3). Zap feel: a line,
+## a flash, a shake (Ep1). `autoplay` drives the spark for captures.
+##
+## Ep6 adds health: a crab touch costs health, a red flash shows the
+## hit, and a half-second mercy cooldown means one touch is one hit.
+## There is also no hit sound: the sound is saved for the juice episode.
+##
+## Ep7 adds the ending: when health reaches zero the spark shouts
+## died, exactly once — the is_dead state flag remembers the run is
+## over, so late hits (even two crabs on the same physics step)
+## change nothing. The GameOver layer listens for the shout.
+##
+## Ep10 adds the level-up payoff: the spawner shouts level_up, the
+## spark hears it (the &quot;spawner&quot; group lookup, Ep5&#x27;s pattern) and
+## patches itself up by level_heal. Picking what a level gives is
+## Episode 11&#x27;s job; in Ep10 the heal is the whole prize.
+
+signal health_changed(new_health: int)
+signal died
+
+@export var speed: float = 300.0
+@export var accel: float = 3000.0
+@export var zap_range: float = 230.0
+@export var zap_cooldown: float = 0.2
+## Health the spark starts with. Ten clean crab hits empty it.
+@export var max_health: int = 100
+## Seconds after a landed hit during which the spark can&#x27;t be hurt
+## again. This cooldown belongs to the spark, not to any one crab,
+## so a whole swarm shares the same speed limit.
+@export var hit_cooldown: float = 0.5
+## Health a level-up hands back (Ep10). Twenty is two hits&#x27; worth.
+@export var level_heal: int = 20
+@export var autoplay: bool = false
+
+const FLOOR_MIN := Vector2(64, 64)
+const FLOOR_MAX := Vector2(1088, 584)
+const RADIUS := 20.0
+
+var health: int
+## Run state (Ep7): false while playing, true once the run is over.
+var is_dead: bool = false
+
+var _cooldown_left: float = 0.0
+var _hit_left: float = 0.0
+var _facing: Vector2 = Vector2.RIGHT
+
+@onready var _sprite: Sprite2D = $Sprite
+@onready var _zap_line: Line2D = $ZapLine
+@onready var _flash: ColorRect = $FlashLayer/Flash
+
+
+func _ready() -&gt; void:
+	health = max_health
+	# Ep10: hear the level-up shout. Group membership is set in the
+	# scene (the Groups-dock way), so the spawner is findable here
+	# no matter which node&#x27;s _ready runs first.
+	var spawner := get_tree().get_first_node_in_group(&quot;spawner&quot;)
+	if spawner != null and spawner.has_signal(&quot;level_up&quot;):
+		spawner.level_up.connect(_on_level_up)
+
+
+func _physics_process(delta: float) -&gt; void:
+	_hit_left = maxf(_hit_left - delta, 0.0)
+	var input_dir := Vector2.ZERO
+	if autoplay:
+		input_dir = _autoplay_dir()
+	else:
+		input_dir = Input.get_vector(&quot;move_left&quot;, &quot;move_right&quot;, &quot;move_up&quot;, &quot;move_down&quot;)
+	var target := input_dir * speed
+	velocity = velocity.move_toward(target, accel * delta)
+	move_and_slide()
+	global_position.x = clampf(global_position.x, FLOOR_MIN.x + RADIUS, FLOOR_MAX.x - RADIUS)
+	global_position.y = clampf(global_position.y, FLOOR_MIN.y + RADIUS, FLOOR_MAX.y - RADIUS)
+	if input_dir != Vector2.ZERO:
+		_facing = input_dir.normalized()
+	_cooldown_left -= delta
+	if _cooldown_left &lt;= 0.0:
+		var crab := _nearest_crab()
+		if crab != null:
+			_zap(crab)
+
+
+## Something hurt the spark. Returns true when the hit counted, so
+## the attacker knows it connected (the crab bounces off only then).
+## While the mercy cooldown is still running, the hit is ignored:
+## a touch that stays touching does not keep paying out.
+func take_damage(amount: int) -&gt; bool:
+	if is_dead:
+		return false  # dead is dead: late hits change nothing
+	if _hit_left &gt; 0.0:
+		return false
+	_hit_left = hit_cooldown
+	health = clampi(health - amount, 0, max_health)
+	health_changed.emit(health)
+	_flash_damage()
+	if health &lt;= 0:
+		is_dead = true  # set the flag BEFORE the shout,
+		died.emit()     # so listeners already see the final state
+	return true
+
+
+## Patch the spark up (Ep10). The mirror of take_damage: never
+## above max health, and never for the dead — a level-up that
+## lands after the run ends changes nothing.
+func heal(amount: int) -&gt; void:
+	if is_dead or amount &lt;= 0:
+		return
+	var new_health := clampi(health + amount, 0, max_health)
+	if new_health != health:
+		health = new_health
+		health_changed.emit(health)
+
+
+func _on_level_up(_new_level: int) -&gt; void:
+	heal(level_heal)
+
+
+func _flash_damage() -&gt; void:
+	# The damage feedback (Ep6): the sprite blinks red and settles
+	# back over a quarter of a second. A tween, like the Ep5 banner.
+	# No sound here — the hit sound is saved for the juice episode.
+	_sprite.modulate = Color(1.0, 0.3, 0.3)
+	var tw := create_tween()
+	tw.tween_property(_sprite, &quot;modulate&quot;, Color.WHITE, 0.25)
+
+
+func _nearest_crab() -&gt; Node2D:
+	var best: Node2D = null
+	var best_d := zap_range
+	for node in get_tree().get_nodes_in_group(&quot;enemies&quot;):
+		var d := global_position.distance_to(node.global_position)
+		if d &lt; best_d:
+			best_d = d
+			best = node
+	return best
+
+
+func _autoplay_dir() -&gt; Vector2:
+	# Kite the nearest crab: hold about 150 px from it, strafing slowly,
+	# so the zap stays in range and the picture keeps moving.
+	var crab := _nearest_crab_any()
+	if crab == null:
+		return Vector2.ZERO
+	var to_crab := crab.global_position - global_position
+	var dist := to_crab.length()
+	var radial := 0.0
+	if dist &gt; 170.0:
+		radial = 1.0
+	elif dist &lt; 120.0:
+		radial = -1.0
+	var tangent := to_crab.normalized().orthogonal() * 0.6
+	return (to_crab.normalized() * radial + tangent).normalized()
+
+
+func _nearest_crab_any() -&gt; Node2D:
+	var best: Node2D = null
+	var best_d := INF
+	for node in get_tree().get_nodes_in_group(&quot;enemies&quot;):
+		var d := global_position.distance_to(node.global_position)
+		if d &lt; best_d:
+			best_d = d
+			best = node
+	return best
+
+
+func _zap(crab: Node2D) -&gt; void:
+	_cooldown_left = zap_cooldown
+	_facing = (crab.global_position - global_position).normalized()
+	# The line: a jagged bolt to the crab (Ep1).
+	var pts: PackedVector2Array = [Vector2.ZERO]
+	var dir := _facing
+	var side := dir.orthogonal()
+	var dist := global_position.distance_to(crab.global_position)
+	for i in range(1, 4):
+		var along := dist * i / 4.0
+		pts.append(dir * along + side * randf_range(-13.0, 13.0))
+	pts.append(dir * dist)
+	_zap_line.points = pts
+	_zap_line.visible = true
+	# The flash (Ep1): alpha 0.25, gone in a tenth of a second.
+	_flash.modulate.a = 0.25
+	var tw := create_tween()
+	tw.tween_property(_flash, &quot;modulate:a&quot;, 0.0, 0.1)
+	tw.parallel().tween_callback(func() -&gt; void: _zap_line.visible = false).set_delay(0.08)
+	# The hit (Ep3): one zap, one crab down.
+	if crab.has_method(&quot;take_hit&quot;):
+		crab.take_hit()</code></pre></div>
+<h2 id="run-it">Run it</h2>
+<ol>
+<li>Install <a href="https://godotengine.org/download/archive/4.8-beta1/" target="_blank" rel="noopener noreferrer">Godot 4.8 beta 1</a> (the standard build).</li>
+<li>Unzip <code>ep10.zip</code>.</li>
+<li>In Godot&rsquo;s Project Manager, click <strong>Import</strong> and pick <code>project.godot</code> inside the <code>spark-swarm-ep10</code> folder.</li>
+<li>Press <strong>Play</strong> (F5). Move with WASD, the arrow keys or a gamepad. Zap with Space or the bottom face button.</li>
+</ol>
+<blockquote class="callout"><p><strong>One honest limit:</strong> The XP and the level live in the spawner, and a restart reloads the scene — so the climb resets with the run, same as the score. What a level-up should let you <em>choose</em> is the next episode&rsquo;s job.</p></blockquote>
+<h2 id="make-it-yours">Make it yours</h2>
+<p>Set XP Base to 3 and play: level 2 now lands after three grabs, often inside wave 2. Then set Level Heal to 50 and watch a level-up hand back five pips at once. Same curve, your tuning.</p>
+<p>Then show us. Share a clip or a screenshot of your version, tell us what you changed, and see what everyone else built.</p>
+<p><!-- POST-YOUR-VERSION: Discussion not created yet. When it exists, set data-discussion to its number and href to /thread.html?id=gh-NUMBER --><a class="btn" id="post-your-version" data-discussion="" href="https://github.com/vibe-garage/vibe-garage/discussions/categories/show-and-tell" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 0 0 4 16.1L2 22Z" /></svg> Post your version</a></p>
+<h2 id="how-its-made">How it&rsquo;s made</h2>
+<p><strong>How this series is made:</strong> Lexi Volt&rsquo;s narration voice is AI-generated, and the scripts, the music and the project code were written with AI tools. Every project is then built, run and tested in the real Godot 4.8 beta 1 editor, and the files here match the code shown in the video. The game art is by Kenney — &ldquo;Platformer Pack Remastered&rdquo; (kenney.nl), released CC0.</p>
+<p class="doc-back"><a class="btn ghost sm" href="/spark-swarm/ep09.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> Episode 9</a> <span class="tag">Next: Episode 11, Power Up</span></p>
+</article></div><p class="doc doc-back"><a class="btn ghost sm" href="/spark-swarm/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg> All Spark Swarm episodes</a></p><p class="sr-only" aria-live="polite" id="copy-status"></p></div></main>
+
+<footer><div class="wrap"><div class="loop"><div><h2>Stay in the loop</h2><p>Forum threads land in the Atom feed. You can also follow them in Discussions.</p></div><div class="loop-links"><a class="btn ghost sm" href="/feed.xml">Atom feed</a><a class="btn ghost sm" href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></div></div><div class="cols">
+<div><a class="logo" href="/index.html"><span class="mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>Vibe<b>Garage</b></a><p style="max-width:340px">A cozy late-night hangout for people who build with AI. Half-finished is welcome here.</p></div>
+<div><h4>Explore</h4><a href="/projects.html">Projects</a><a href="/forum.html">Forum</a><a href="/challenges.html">Challenges</a><a href="/learn.html">Learn</a><a href="/leaderboard.html">Leaderboard</a><a href="/profile.html">Builders</a></div>
+<div><h4>Share</h4><a href="/submit.html">Submit a project</a><a href="/forum.html">Start a thread</a><a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></div>
+<div><h4>Community</h4><a href="/guidelines.html">Community guidelines</a><a href="/guidelines.html#report">Report something</a><a href="/guidelines.html#mods">Moderation</a></div></div>
+<div class="fine"><span>© 2026 Vibe Garage · forum runs on <a href="https://github.com/vibe-garage/vibe-garage/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a></span><span>Icons: <a href="https://lucide.dev" target="_blank" rel="noopener noreferrer">Lucide</a> (ISC) · Fonts: Google Fonts (OFL) · Cover art generated in-browser</span></div></div></footer>
+<script>(function(){try{if(navigator.webdriver)return;fetch("/api/hit",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({p:location.pathname,s:location.search,r:document.referrer})}).catch(function(){})}catch(e){}})()</script></body></html>
